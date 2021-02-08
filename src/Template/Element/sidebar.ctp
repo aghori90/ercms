@@ -16,7 +16,8 @@ if ($loggeduser) {
             <div class="logo-src"></div>
             <div class="header__pane ml-auto">
                 <div>
-                    <button type="button" class="hamburger close-sidebar-btn hamburger--elastic" data-class="closed-sidebar">
+                    <button type="button" class="hamburger close-sidebar-btn hamburger--elastic"
+                            data-class="closed-sidebar">
                         <span class="hamburger-box">
                             <span class="hamburger-inner"></span>
                         </span>
@@ -47,29 +48,27 @@ if ($loggeduser) {
                 <ul class="vertical-nav-menu">
                     <li class="app-sidebar__heading">Menu</li>
                     <?php if ($group_id == 7) { ?>
-                       <!-- <li>
+                        <!-- <li>
                             <a href="<?= $baseurl ?>SeccCardholderAddTemps/checkAcknowledgement">
                                 Pending Application Mapping
                             </a>
                         </li> -->
-                    <?php }
-			else if($group_id == 13)
-			 {?>
+                    <?php } else if ($group_id == 13) {
+                        ?>
 
-                <li>
-                    <a href="<?= $baseurl ?>JsfssDistrictReports/districtWiseReport">
-                        Green Card Count Report
-                    </a>
-                </li>
-
-			 <?php }
-			  else if($group_id == 12) { ?>
                         <li>
                             <a href="<?= $baseurl ?>JsfssDistrictReports/districtWiseReport">
                                 Green Card Count Report
                             </a>
                         </li>
-			   <li>
+
+                    <?php } else if ($group_id == 12) { ?>
+                        <li>
+                            <a href="<?= $baseurl ?>JsfssDistrictReports/districtWiseReport">
+                                Green Card Count Report
+                            </a>
+                        </li>
+                        <li>
                             <a href="<?= $baseurl ?>secc-cardholders/dsoSearchApplication">
                                 Pending Application(GreenCard)
                             </a>
@@ -84,8 +83,13 @@ if ($loggeduser) {
                                 Search/view rationcard(GreenCard)
                             </a>
                         </li>
-                    <?php } else if($group_id == 20) { ?>
-                         <li>
+                        <li>
+                            <a href="<?= $baseurl ?>secc-cardholders/nfsaRationcardApprovalDso">
+                                DSO Approval
+                            </a>
+                        </li>
+                    <?php } else if ($group_id == 20) { ?>
+                        <li>
                             <a href="<?= $baseurl ?>SeccCardholderAddTemps/checkAcknowledgement">
                                 Pending Application Mapping
                             </a>
@@ -95,11 +99,11 @@ if ($loggeduser) {
                                 Pending Application(GreenCard)
                             </a>
                         </li>
-                          <li>
-                              <a href="<?= $baseurl ?>secc-cardholders/nfsaRationcardApprovalBso">
-                                  Bso Approval
-                              </a>
-                          </li>
+                        <li>
+                            <a href="<?= $baseurl ?>secc-cardholders/nfsaRationcardApprovalBso">
+                                Bso Approval
+                            </a>
+                        </li>
                     <?php } else { ?>
                         <!-- <li>
                             <a href="<?= $baseurl ?>SeccCardholders/ercmsRequest">

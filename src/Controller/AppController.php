@@ -12,13 +12,17 @@
  * @since     0.2.9
  * @license   https://opensource.org/licenses/mit-license.php MIT License
  */
+
 namespace App\Controller;
+
+use Cake\Datasource\ConnectionManager;
 use Cake\ORM\TableRegistry;
 
 use Cake\Controller\Controller;
 use Cake\Event\Event;
 use Cake\Routing\Router;
 use Cake\Utility\Security;
+
 /**
  * Application Controller
  *
@@ -29,9 +33,9 @@ use Cake\Utility\Security;
  */
 class AppController extends Controller
 {
-	/** Start : Define global variables*/
-		public $base_url;
-	/** End : Define global variables*/
+    /** Start : Define global variables*/
+    public $base_url;
+    /** End : Define global variables*/
 
     /**
      * Initialization hook method.
@@ -93,7 +97,7 @@ class AppController extends Controller
         //$this->loadComponent('Security');
     }
 
-	/**
+    /**
      * getBlocksByDistrict Method
      *
      */
@@ -113,22 +117,23 @@ class AppController extends Controller
         readfile($filename);
     }
 
-	public function getBlocksByDistrict($id=null){
+    public function getBlocksByDistrict($id = null)
+    {
         $request_data = $this->request->getData();
-        if($this->request->is(['ajax'])){
-            $this -> autoRender = false;
+        if ($this->request->is(['ajax'])) {
+            $this->autoRender = false;
             $this->viewBuilder()->setLayout('ajax');
             $id = $request_data['id'];
         }
         $blockCityData = TableRegistry::getTableLocator()->get('SeccBlocks');
-        if(!empty($id)){
+        if (!empty($id)) {
             $query = $blockCityData->find('list', [
                 'keyField' => 'rgi_block_code',
                 'valueField' => 'name',
-                'conditions'=>['rgi_district_code='."'".$id."'"]
+                'conditions' => ['rgi_district_code=' . "'" . $id . "'"]
 
             ]);
-        }else{
+        } else {
             $query = $blockCityData->find('list', [
                 'keyField' => 'rgi_block_code',
                 'valueField' => 'name'
@@ -136,10 +141,10 @@ class AppController extends Controller
         }
         $blocks = $query->toArray();
         //array_unshift($blocks, '--Select Block--');
-        if($this->request->is(['ajax'])){
+        if ($this->request->is(['ajax'])) {
             echo json_encode($blocks);
             die;
-        }else{
+        } else {
             return $blocks;
         }
     }
@@ -149,10 +154,11 @@ class AppController extends Controller
      * @return type
      */
 
-    public function getVillagesByBlock($id=null){
+    public function getVillagesByBlock($id = null)
+    {
         $request_data = $this->request->getData();
-        if($this->request->is(['ajax'])){
-            $this -> autoRender = false;
+        if ($this->request->is(['ajax'])) {
+            $this->autoRender = false;
             $this->viewBuilder()->setLayout('ajax');
             $id = $request_data['id'];
         }
@@ -161,67 +167,61 @@ class AppController extends Controller
         $query = $villageData->find('list', [
             'keyField' => 'rgi_village_code',
             'valueField' => 'name',
-            'conditions'=>['SeccVillageWards.rgi_block_code='."'".$id."'"]
+            'conditions' => ['SeccVillageWards.rgi_block_code=' . "'" . $id . "'"]
         ]);
         $villages = $query->toArray();
-        if($this->request->is(['ajax'])){
+        if ($this->request->is(['ajax'])) {
             echo json_encode($villages);
             die;
-        }else{
+        } else {
             return $villages;
         }
     }
 
-   public function appEncryptData($value)
+    public function appEncryptData($value)
     {
-        $key=ENCY_KEY;
-        $plaintext =$value;
+        $key = ENCY_KEY;
+        $plaintext = $value;
         $cipher = "aes-128-ctr";
-        if (in_array($cipher, openssl_get_cipher_methods()))
-        {
+        if (in_array($cipher, openssl_get_cipher_methods())) {
             $ivlen = openssl_cipher_iv_length($cipher);
-            $iv =iv_KEY;
-            $ciphertext = openssl_encrypt($plaintext, $cipher, $key, $options=0, $iv);
+            $iv = iv_KEY;
+            $ciphertext = openssl_encrypt($plaintext, $cipher, $key, $options = 0, $iv);
         }
         return $ciphertext;
     }
 
     public function appDecryptData($value)
     {
-        $key=ENCY_KEY;
-        $ciphertext =$value;
+        $key = ENCY_KEY;
+        $ciphertext = $value;
         $cipher = "aes-128-ctr";
-        if (in_array($cipher, openssl_get_cipher_methods()))
-        {
+        if (in_array($cipher, openssl_get_cipher_methods())) {
             $ivlen = openssl_cipher_iv_length($cipher);
             $iv = iv_KEY;
 
-            $original_plaintext = openssl_decrypt($ciphertext, $cipher, $key, $options=0, $iv);
+            $original_plaintext = openssl_decrypt($ciphertext, $cipher, $key, $options = 0, $iv);
         }
         return $original_plaintext;
     }
 
-    public function getDealersByBlock($id=null)
+    public function getDealersByBlock($id = null)
     {
         $request_data = $this->request->getData();
-        if ($this->request->is(['ajax']))
-        {
-            $this -> autoRender = false;
+        if ($this->request->is(['ajax'])) {
+            $this->autoRender = false;
             $this->viewBuilder()->setLayout('ajax');
             $id = $request_data['id'];
         }
 
         $Dealers = TableRegistry::getTableLocator()->get('Dealers');
-        if (!empty($id))
-        {
+        if (!empty($id)) {
             $query = $Dealers->find('list', [
-            'keyField' => 'id',
-            'valueField' => 'name',
-            'conditions'=>['Dealers.rgi_block_code='."'".$id."'"]
-        ]);
-        }
-        else
-        {
+                'keyField' => 'id',
+                'valueField' => 'name',
+                'conditions' => ['Dealers.rgi_block_code=' . "'" . $id . "'"]
+            ]);
+        } else {
             $query = $Dealers->find('list', [
                 'keyField' => 'id',
                 'valueField' => 'name'
@@ -230,33 +230,31 @@ class AppController extends Controller
         }
         $Dealers = $query->toArray();
 
-        if ($this->request->is(['ajax']))
-        {
+        if ($this->request->is(['ajax'])) {
             echo json_encode($Dealers);
             die;
-        }
-        else
-        {
+        } else {
             return $Dealers;
         }
     }
 
-    public function getPanchayatsByBlock($id=null){
+    public function getPanchayatsByBlock($id = null)
+    {
         $request_data = $this->request->getData();
-        if($this->request->is(['ajax'])){
-            $this -> autoRender = false;
+        if ($this->request->is(['ajax'])) {
+            $this->autoRender = false;
             $this->viewBuilder()->setLayout('ajax');
             $id = $request_data['id'];
         }
 
         $panchayatData = TableRegistry::getTableLocator()->get('panchayats');
-        if(!empty($id)){
+        if (!empty($id)) {
             $query = $panchayatData->find('list', [
                 'keyField' => 'id',
                 'valueField' => 'name',
-                'conditions'=>['panchayats.rgi_block_code='."'".$id."'"]
+                'conditions' => ['panchayats.rgi_block_code=' . "'" . $id . "'"]
             ]);
-        }else{
+        } else {
             $query = $panchayatData->find('list', [
                 'keyField' => 'id',
                 'valueField' => 'name'
@@ -265,47 +263,62 @@ class AppController extends Controller
 
         $panchayats = $query->toArray();
 
-        if($this->request->is(['ajax'])){
+        if ($this->request->is(['ajax'])) {
             echo json_encode($panchayats);
             die;
-        }else{
+        } else {
             return $panchayats;
         }
     }
 
-    public function getVillagesByPanchayat($id=null){
+    public function getVillagesByPanchayat($id = null)
+    {
 
         $request_data = $this->request->getData();
-        if($this->request->is('ajax')){
-            $this -> autoRender = false;
+        if ($this->request->is('ajax')) {
+            $this->autoRender = false;
             $this->viewBuilder()->layout('ajax');
             $id = $request_data['id']; //echo $id;die;
         }
         $villageData = TableRegistry::get('SeccVillageWards');
-        if(!empty($id)){
+        if (!empty($id)) {
             $query = $villageData->find('list', [
                 'keyField' => 'rgi_village_code',
                 'valueField' => 'name',
-                'conditions'=>['SeccVillageWards.rgi_block_code='."'".$id."'"],
-                'order'=>'name'
+                'conditions' => ['SeccVillageWards.rgi_block_code=' . "'" . $id . "'"],
+                'order' => 'name'
 
             ]);
-        }else{
+        } else {
             $query = $villageData->find('list', [
                 'keyField' => 'rgi_village_code',
                 'valueField' => 'name',
-                'order'=>'name'
+                'order' => 'name'
 
             ]);
         }
         $villages = $query->toArray();
-        if($this->request->is('ajax')){
+        if ($this->request->is('ajax')) {
             echo json_encode($villages);
             die;
-        }else{
+        } else {
             return $villages;
         }
     }
 
-
+    public function checkExistMobile()
+    {
+        $connection = ConnectionManager::get('default');
+        $mobil = $connection->prepare("select mobile from jsfss_secc_families where mobile is not null");
+        $mobil->execute();
+        $mob = $mobil->fetchAll('assoc');
+        //echo "<pre>"; print_r($mob); "<pre>"; die;
+        $phone = [];
+        if (!empty($mob)) {
+            foreach ($mob as $mkey => $mVal) {
+                $phone[] = $mVal['mobile'];
+            }
+        }
+        return $phone;
+    }
 }
