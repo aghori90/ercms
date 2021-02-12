@@ -321,4 +321,20 @@ class AppController extends Controller
         }
         return $phone;
     }
+
+    public function checkExistBankAcc($bank_master_id=null, $accNo=null)
+    {
+        $connection = ConnectionManager::get('default');
+        $bankQry = $connection->prepare("select bank_account_no from jsfss_secc_cardholders where bank_master_id='$bank_master_id' and bank_account_no='$accNo'");
+        $bankQry->execute();
+        $bank = $bankQry->fetchAll('assoc');
+        //echo "<pre>"; print_r($mob); "<pre>"; die;
+        $bankArr = [];
+        if (!empty($bank)) {
+            foreach ($bank as $bkey => $bVal) {
+                $bankArr[] = $bVal['bank_account_no'];
+            }
+        }
+        return $bankArr;
+    }
 }

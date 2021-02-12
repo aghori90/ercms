@@ -1256,11 +1256,11 @@ class SeccCardholdersController extends AppController
         $nfsaRationcards = '';
         //echo "<pre>"; print_r($this->getRequest()->getSession()->read()); "<pre>"; //die;
         if ($this->request->getSession()->check('Auth')) {
-            $user_id = $this->getRequest()->getSession()->read('Auth.User.id');
-            $username = $this->getRequest()->getSession()->read('Auth.User.username');
-            $group_id = $this->getRequest()->getSession()->read('Auth.User.group_id');
-            $rgi_district_code = $this->getRequest()->getSession()->read('Auth.User.rgi_district_code');
-            $rgi_block_code = $this->getRequest()->getSession()->read('Auth.User.rgi_block_code');
+            $user_id    = $this->getRequest()->getSession()->read('Auth.User.id');
+            $username   = $this->getRequest()->getSession()->read('Auth.User.username');
+            $group_id   = $this->getRequest()->getSession()->read('Auth.User.group_id');
+            $rgi_district_code  = $this->getRequest()->getSession()->read('Auth.User.rgi_district_code');
+            $rgi_block_code     = $this->getRequest()->getSession()->read('Auth.User.rgi_block_code');
         } else {
             return $this->redirect($this->Auth->logout());
         }//echo "== ".$rgi_block_code;die;
@@ -1291,17 +1291,14 @@ class SeccCardholdersController extends AppController
             $activity_type_id = $request_data['activity_type_id'];
             $activity_flag = $request_data['activity_flag'];
 
-//      todo: write activity & flag type in session
+//      todo: write activity & flag type in session=====================================================================
             $this->getRequest()->getSession()->write('activity_Type_Id', $activity_type_id);
             $this->getRequest()->getSession()->write('activity_Flag', $activity_flag);
-            $activityTypeId = $this->getRequest()->getSession()->read('activity_Type_Id');
+            $activityTypeId = $this->getRequest()->getSession()->read('activity_Type_Id'); //die;
             $activityFlag = $this->getRequest()->getSession()->read('activity_Flag');
 
-//      todo: for New application=====================================================================
+//      todo: for New application=======================================================================================
             if ($activityTypeId == 1) {
-
-//                echo "SELECT rationcard_no,ack_no,cardtype_id,name,fathername FROM cardholder_activity_temps WHERE rgi_district_code=$rgi_district_code AND rgi_block_code=$rgi_block_code AND activity_type_id=$activity_type_id AND activity_flag=$activity_flag LIMIT 10"; die;
-
 
                 $datas = $connection->prepare("SELECT rationcard_no,ack_no,cardtype_id,name,fathername FROM cardholder_activity_temps WHERE rgi_district_code=? AND rgi_block_code=? AND activity_type_id=? AND activity_flag=? LIMIT 10");
 
@@ -1312,23 +1309,23 @@ class SeccCardholdersController extends AppController
                 $datas->execute();
                 $nfsaRationcards = $datas->fetchAll('assoc');
 
-//                echo "<pre>"; print_r($nfsaRationcards); "<pre>"; die;
-
                 if ($activity_type_id == '' || $activity_flag == '') {
                     $this->Flash->error('Application Type and Application Status are mandatory');
                     return $this->redirect(['action' => 'nfsaRationcardApprovalBso']);
 
                 }
+            }
 
-            } // condition: $activity_type_id == 1
-//      todo: for name change==========================================================================
-            elseif ($activityTypeId == 10) {
+//      todo: add family members========================================================================================
+            elseif ($activityTypeId == 2){
 
-                $datas = $connection->prepare("SELECT rationcard_no,ack_no,cardtype_id,name,fathername FROM cardholder_activity_temps WHERE rgi_district_code=? AND rgi_block_code=? AND activity_type_id= '10' AND activity_flag= ? LIMIT 10");
+                $datas = $connection->prepare("SELECT rationcard_no,ack_no_ercms,name,fathername FROM family_activity_temps WHERE rgi_district_code=? AND rgi_block_code=? AND activity_type_id=?  AND activity_flag= ? LIMIT 10");
 
                 $datas->bindValue(1, $rgi_district_code);
                 $datas->bindValue(2, $rgi_block_code);
-                $datas->bindValue(3, $activity_flag);
+                $datas->bindValue(3, $activity_type_id);
+                $datas->bindValue(4, $activity_flag);
+
                 $datas->execute();
                 $nfsaRationcards = $datas->fetchAll('assoc');
 
@@ -1337,10 +1334,60 @@ class SeccCardholdersController extends AppController
                     return $this->redirect(['action' => 'nfsaRationcardApprovalBso']);
 
                 }
+            }
 
-            } // condition: $activity_type_id == 10
+//      todo: address change============================================================================================
+            elseif ($activityTypeId == 3){
+                $datas = $connection->prepare("SELECT rationcard_no,ack_no,cardtype_id,name,fathername FROM cardholder_activity_temps WHERE rgi_district_code=? AND rgi_block_code=? AND activity_type_id=? AND activity_flag=?  LIMIT 10");
 
-//      todo: for mobile change
+                $datas->bindValue(1, $rgi_district_code);
+                $datas->bindValue(2, $rgi_block_code);
+                $datas->bindValue(3, $activity_type_id);
+                $datas->bindValue(4, $activity_flag);
+                $datas->execute();
+                $nfsaRationcards = $datas->fetchAll('assoc');
+
+                if ($activity_type_id == '' || $activity_flag == '') {
+                    $this->Flash->error('Application Type and Application Status are mandatory');
+                    return $this->redirect(['action' => 'nfsaRationcardApprovalBso']);
+                }
+            }
+
+//      todo: dealer change=============================================================================================
+            elseif ($activityTypeId == 4){
+                $datas = $connection->prepare("SELECT rationcard_no,ack_no,cardtype_id,name,fathername FROM cardholder_activity_temps WHERE rgi_district_code=? AND rgi_block_code=? AND activity_type_id=? AND activity_flag=?  LIMIT 10");
+
+                $datas->bindValue(1, $rgi_district_code);
+                $datas->bindValue(2, $rgi_block_code);
+                $datas->bindValue(3, $activity_type_id);
+                $datas->bindValue(4, $activity_flag);
+                $datas->execute();
+                $nfsaRationcards = $datas->fetchAll('assoc');
+
+                if ($activity_type_id == '' || $activity_flag == '') {
+                    $this->Flash->error('Application Type and Application Status are mandatory');
+                    return $this->redirect(['action' => 'nfsaRationcardApprovalBso']);
+                }
+            }
+
+//      todo: card type change==========================================================================================
+            elseif ($activityTypeId == 5){
+                $datas = $connection->prepare("SELECT rationcard_no,ack_no,cardtype_id,name,fathername FROM cardholder_activity_temps WHERE rgi_district_code=? AND rgi_block_code=? AND activity_type_id=? AND activity_flag=?  LIMIT 10");
+
+                $datas->bindValue(1, $rgi_district_code);
+                $datas->bindValue(2, $rgi_block_code);
+                $datas->bindValue(3, $activity_type_id);
+                $datas->bindValue(4, $activity_flag);
+                $datas->execute();
+                $nfsaRationcards = $datas->fetchAll('assoc');
+
+                if ($activity_type_id == '' || $activity_flag == '') {
+                    $this->Flash->error('Application Type and Application Status are mandatory');
+                    return $this->redirect(['action' => 'nfsaRationcardApprovalBso']);
+                }
+            }
+
+//      todo: for mobile change=========================================================================================
             elseif ($activityTypeId == 6) {
 
                 $datas = $connection->prepare("SELECT rationcard_no,ack_no_ercms,name,fathername FROM family_activity_temps WHERE rgi_district_code=? AND rgi_block_code=? AND activity_type_id= '6' AND activity_flag= ? LIMIT 10");
@@ -1359,6 +1406,58 @@ class SeccCardholdersController extends AppController
                 }
             }
 
+//      todo: Account No. change========================================================================================
+            elseif ($activityTypeId == 7){
+
+//                echo "SELECT rationcard_no,ack_no,cardtype_id,name,fathername FROM cardholder_activity_temps WHERE rgi_district_code=? AND rgi_block_code=? AND activity_type_id=? AND activity_flag=?  LIMIT 10"; die;
+
+                $datas = $connection->prepare("SELECT rationcard_no,ack_no,cardtype_id,name,fathername FROM cardholder_activity_temps WHERE rgi_district_code=? AND rgi_block_code=? AND activity_type_id=? AND activity_flag=?  LIMIT 10");
+
+                $datas->bindValue(1, $rgi_district_code);
+                $datas->bindValue(2, $rgi_block_code);
+                $datas->bindValue(3, $activity_type_id);
+                $datas->bindValue(4, $activity_flag);
+                $datas->execute();
+                $nfsaRationcards = $datas->fetchAll('assoc');
+
+                if ($activity_type_id == '' || $activity_flag == '') {
+                    $this->Flash->error('Application Type and Application Status are mandatory');
+                    return $this->redirect(['action' => 'nfsaRationcardApprovalBso']);
+                }
+
+            }
+//      todo: Uid No. change============================================================================================
+            elseif ($activityTypeId == 8){
+                // done by shashi
+            }
+
+//      todo: Delete change=============================================================================================
+            elseif ($activityTypeId == 9){
+                // by shashi
+            }
+
+//      todo: for name change===========================================================================================
+        elseif ($activityTypeId == 10) {
+
+            // by shashi
+
+        } // condition: $activity_type_id == 10
+//      todo: HOF change=============================================================================================
+            elseif ($activityTypeId == 11){
+                $datas = $connection->prepare("SELECT rationcard_no,ack_no,cardtype_id,name,fathername FROM cardholder_activity_temps WHERE rgi_district_code=? AND rgi_block_code=? AND activity_type_id=? AND activity_flag=?  LIMIT 10");
+
+                $datas->bindValue(1, $rgi_district_code);
+                $datas->bindValue(2, $rgi_block_code);
+                $datas->bindValue(3, $activity_type_id);
+                $datas->bindValue(4, $activity_flag);
+                $datas->execute();
+                $nfsaRationcards = $datas->fetchAll('assoc');
+
+                if ($activity_type_id == '' || $activity_flag == '') {
+                    $this->Flash->error('Application Type and Application Status are mandatory');
+                    return $this->redirect(['action' => 'nfsaRationcardApprovalBso']);
+                }
+            }
         }
         $this->set(compact('blockName', 'villages', 'activityType', 'rgi_block_code', 'nfsaRationcards', 'activity_type_id'));
     }
@@ -1367,11 +1466,23 @@ class SeccCardholdersController extends AppController
     public function nfsaRationCardDataBso()
     {
         $connection = ConnectionManager::get('default');
+        $session_data = $this->getRequest()->getSession()->read();
+//        echo "<pre>"; print_r($session_data); "<pre>"; die;
         $activityTypeId = '';
-        $rgi_district_code = $this->getRequest()->getSession()->read('Auth.User.rgi_district_code');
-        $rgi_block_code = $this->getRequest()->getSession()->read('Auth.User.rgi_block_code');
-        $activityTypeId = $this->getRequest()->getSession()->read('activity_Type_Id'); //die();
-        $activityFlag = $this->getRequest()->getSession()->read('activity_Flag'); //die;
+        $activityType ='';
+
+        if ($this->request->getSession()->check('Auth')) {
+            $rgi_district_code  = $this->getRequest()->getSession()->read('Auth.User.rgi_district_code');
+            $rgi_block_code     = $this->getRequest()->getSession()->read('Auth.User.rgi_block_code');
+            $activityTypeId     = $this->getRequest()->getSession()->read('activity_Type_Id'); //die();
+            $activityFlag       = $this->getRequest()->getSession()->read('activity_Flag'); //die;
+            $group_id           = $this->getRequest()->getSession()->read('Auth.User.group_id');
+        } else {
+            return $this->redirect($this->Auth->logout());
+        }//echo "== ".$rgi_block_code;die;
+        if ($group_id != '20') {
+            return $this->redirect($this->Auth->logout());
+        }
 
 //      todo: activity Types array
         $applicationType = TableRegistry::get('activity_types');
@@ -1384,20 +1495,905 @@ class SeccCardholdersController extends AppController
 
         $finalArray = [];
         $currMobile = '';
+        $currAccount = '';
+        $nfsaRationcardsDetaild = [];
+        $nfsaAppliedRationcardsDetails = [];
+        $seccFamiliesDetails = [];
+        $family_head_data = [];
+        $hofId = '';
+        $currAddress = '';
+        $currDealer = '';
+        $currCard = '';
 
         $this->viewBuilder()->setLayout('admin');
         if ($this->getRequest()->is('post')) {
-            $request_data = $this->getRequest()->getData();
-//            echo "<pre>"; print_r($request_data); "<pre>"; die;
-            $ackNo = $request_data['ackNo'];
-            $rationCardNo = $request_data['rationNo'];
+            $request_data   = $this->getRequest()->getData();
+            $ackNo          = $request_data['ackNo'];
+            $rationCardNo   = $request_data['rationNo'];
+
 
 //      todo: fetching Id  from cardholder_activity_temps for activity id: 1(family change)-----------------------------
             $rationDatas = $connection->prepare("SELECT id, ack_no,name,fathername,mothername,cardtype_id,rgi_district_code,rgi_block_code,rgi_village_code FROM cardholder_activity_temps WHERE ack_no =?");
             $rationDatas->bindValue(1, $ackNo);
             $rationDatas->execute();
-            $nfsaAppliedRationcardsDetails = $rationDatas->fetchAll('assoc');
-            $secc_cardholder_temps_id = $nfsaAppliedRationcardsDetails[0]['id'];
+            $nfsaAppliedRationcardsDetails  = $rationDatas->fetchAll('assoc');
+            $secc_cardholder_temps_id       = $nfsaAppliedRationcardsDetails[0]['id'];
+
+//            echo "<pre>"; print_r($nfsaAppliedRationcardsDetails); "<pre>"; die;
+
+//      todo: fetching Id from jsfss_secc_families for activity id : 2,6 -----------------------------------
+            $rationFamiliesData = $connection->prepare("SELECT id, rationcard_no,hof,name,mobile,fathername,mothername,cardtype_id,rgi_district_code,rgi_block_code,rgi_village_code, accountNo FROM jsfss_secc_families WHERE rationcard_no =?");
+            $rationFamiliesData->bindValue(1, $rationCardNo);
+            $rationFamiliesData->execute();
+            $nfsaRationcardsDetaild = $rationFamiliesData->fetchAll('assoc');
+            $jsfssSeccFamilyId  = $nfsaRationcardsDetaild[0]['id']; //die;
+
+//            echo "<pre>"; print_r($nfsaRationcardsDetaild); "<pre>"; // die;
+
+
+//      todo: fetching Id from jsfss_secc_cardholders for activity id : 3,4,5,7,11 -----------------------------------
+            $rationCardholderData = $connection->prepare("SELECT id, rationcard_no,name,fathername,mothername,cardtype_id,rgi_district_code,rgi_block_code,rgi_village_code, bank_account_no, res_address, dealer_id,cardType_id FROM jsfss_secc_cardholders WHERE rationcard_no =?");
+            $rationCardholderData->bindValue(1, $rationCardNo);
+            $rationCardholderData->execute();
+            $nfsaCardholderDetaild = $rationCardholderData->fetchAll('assoc');
+            $jsfssSeccCardholderId = $nfsaCardholderDetaild[0]['id'];
+
+//            echo "<pre>"; print_r($nfsaCardholderDetaild); "<pre>"; die;
+
+//      todo: fetching details from secc_family_temps for new application approval--------------------------------------
+            if ($activityTypeId == 1) {
+                $seccFamilies = $connection->prepare("SELECT name,fathername,relation_id,mobile,uid,bank_master_id,branch_master_id,accountNo FROM family_activity_temps WHERE secc_cardholder_add_temp_id=?");
+                $seccFamilies->bindValue(1, $secc_cardholder_temps_id);
+                $seccFamilies->execute();
+                $seccFamiliesDetails = $seccFamilies->fetchAll('assoc');
+
+//                echo "<pre>"; print_r($seccFamiliesDetails); "<pre>"; //die;
+            }
+
+//      todo: add family================================================================================================
+            elseif ($activityTypeId == 2){
+                $seccFamilies = $connection->prepare("SELECT id, jsfss_secc_family_id,name,fathername,relation_id,mobile,uid,rationcard_no,branch_master_id,accountNo, rationcard_no  FROM family_activity_temps WHERE jsfss_secc_family_id = ?");
+                $seccFamilies->bindValue(1, $jsfssSeccFamilyId);
+                $seccFamilies->execute();
+                $seccFamiliesDetails = $seccFamilies->fetchAll('assoc');
+                $secc_family_id = $seccFamiliesDetails[0]['jsfss_secc_family_id'];
+
+//                echo "<pre>"; print_r($seccFamiliesDetails); "<pre>";// die;
+
+                if(!empty($nfsaRationcardsDetaild)){
+                    foreach ($nfsaRationcardsDetaild as $jsfssKey => $jsfssVal) {
+                        $hof = $jsfssVal['hof'];
+                        if ($hof == 1) {
+                            $hofKey = 'family_head';
+                            $hofId = $jsfssVal['id'];
+                        } else {
+                            $hofKey = 'family_member';
+                            $hofId = '';
+                        }
+                        $finalArray['jsfss_secc_families'][$hofKey][$jsfssVal['id']] = $jsfssVal;
+//                        $hofId = $finalArray['jsfss_secc_families'][$hofKey[$jsfssVal['id']]];
+                    }
+//                    echo "<pre>"; print_r($finalArray); "<pre>"; die;
+
+                    if(isset($finalArray['jsfss_secc_families']['family_head']) && !empty($finalArray['jsfss_secc_families']['family_head'])) {
+                        $family_head_data = $finalArray['jsfss_secc_families']['family_head'];
+                    }
+//                    echo "<pre>"; print_r($family_head_data); "<pre>"; die;
+                    /*if (array_key_exists($secc_family_id, $finalArray['jsfss_secc_families']['family_member'])) { // jsfss_families:members
+                        $family_member = 1;
+                        $family_head = 0;
+                        $currMobile = $finalArray['jsfss_secc_families']['family_member'][$secc_family_id]['mobile'];
+                    } elseif (array_key_exists($secc_family_id, $finalArray['jsfss_secc_families']['family_head'])) { // jsfss_families:hof
+                        $family_member = 0;
+                        $family_head = 1;
+                        $currMobile = $finalArray['jsfss_secc_families']['family_head'][$secc_family_id]['mobile'];
+                    } else {
+                        $family_member = 0;
+                        $family_head = 0;
+                        $currMobile = 'NA';
+                    }*/
+                }
+//                echo "<pre>"; print_r($currAddress); "<pre>"; die;
+            }
+
+//      todo: address change============================================================================================
+            elseif ($activityTypeId == 3){
+
+                $seccFamilies = $connection->prepare("SELECT id, jsfss_secc_cardholder_id,name,fathername,rationcard_no, res_address FROM cardholder_activity_temps WHERE jsfss_secc_cardholder_id =?");
+                $seccFamilies->bindValue(1, $jsfssSeccCardholderId);
+                $seccFamilies->execute();
+                $seccFamiliesDetails    = $seccFamilies->fetchAll('assoc');
+                $secc_cardholder_id     = $seccFamiliesDetails[0]['jsfss_secc_cardholder_id'];
+
+//                echo "<pre>"; print_r($seccFamiliesDetails); "<pre>";// die;
+
+                if(!empty($nfsaCardholderDetaild)){
+                    $currAddress = $nfsaCardholderDetaild[0]['res_address'];
+                }
+
+//                echo "<pre>"; print_r($currAddress); "<pre>"; die;
+            }
+
+//      todo: dealer type change=============================================================================================
+            elseif ($activityTypeId == 4){
+                $seccFamilies = $connection->prepare("SELECT id, jsfss_secc_cardholder_id,name,fathername,rationcard_no, dealer_id FROM cardholder_activity_temps WHERE jsfss_secc_cardholder_id =?");
+                $seccFamilies->bindValue(1, $jsfssSeccCardholderId);
+                $seccFamilies->execute();
+                $seccFamiliesDetails    = $seccFamilies->fetchAll('assoc');
+                $secc_cardholder_id     = $seccFamiliesDetails[0]['jsfss_secc_cardholder_id'];
+
+//                echo "<pre>"; print_r($seccFamiliesDetails); "<pre>"; die;
+
+                if(!empty($nfsaCardholderDetaild)){
+                    $currDealer = $nfsaCardholderDetaild[0]['dealer_id'];
+                }
+
+//                echo "<pre>"; print_r($currAddress); "<pre>"; die;
+            }
+
+//      todo: card type change==========================================================================================
+            elseif ($activityTypeId == 5){
+                $seccFamilies = $connection->prepare("SELECT id, jsfss_secc_cardholder_id,name,fathername,rationcard_no, cardtype_id FROM cardholder_activity_temps WHERE jsfss_secc_cardholder_id =?");
+                $seccFamilies->bindValue(1, $jsfssSeccCardholderId);
+                $seccFamilies->execute();
+                $seccFamiliesDetails    = $seccFamilies->fetchAll('assoc');
+                $secc_cardholder_id     = $seccFamiliesDetails[0]['jsfss_secc_cardholder_id'];
+
+//                echo "<pre>"; print_r($seccFamiliesDetails); "<pre>"; die;
+
+                if(!empty($nfsaCardholderDetaild)){
+                    $currCard = $nfsaCardholderDetaild[0]['cardType_id'];
+                }
+
+//                echo "<pre>"; print_r($currCard); "<pre>"; die;
+            }
+
+//      todo: fetching details from secc_family_temps for moobile no. change-------------------------
+            elseif ($activityTypeId == 6) {
+//                $seccFamilies = $connection->prepare("SELECT id, jsfss_secc_family_id,name,fathername,relation_id,mobile,uid,rationcard_no,branch_master_id,accountNo, rationcard_no  FROM family_activity_temps WHERE ack_no_ercms =  ? and activity_type_id = ? and activity_flag = ?");
+
+                $seccFamilies = $connection->prepare("SELECT id, jsfss_secc_family_id,name,fathername,relation_id,mobile,uid,rationcard_no,branch_master_id,accountNo, rationcard_no  FROM family_activity_temps WHERE jsfss_secc_family_id = ?");
+                $seccFamilies->bindValue(1, $jsfssSeccFamilyId);
+//                $seccFamilies->bindValue(2, $activityTypeId);
+//                $seccFamilies->bindValue(3, $activityFlag);
+                $seccFamilies->execute();
+                $seccFamiliesDetails = $seccFamilies->fetchAll('assoc');
+                $secc_family_id = $seccFamiliesDetails[0]['jsfss_secc_family_id'];
+
+//                echo "<pre>"; print_r($seccFamiliesDetails); "<pre>"; die;
+
+                if(!empty($nfsaRationcardsDetaild)){
+                    foreach ($nfsaRationcardsDetaild as $jsfssKey => $jsfssVal) {
+                        $hof = $jsfssVal['hof'];
+                        if ($hof == 1) {
+                            $hofKey = 'family_head';
+                            $hofId = $jsfssVal['id'];
+                        } else {
+                            $hofKey = 'family_member';
+                            $hofId = '';
+                        }
+                        $finalArray['jsfss_secc_families'][$hofKey][$jsfssVal['id']] = $jsfssVal;
+//                        $hofId = $finalArray['jsfss_secc_families'][$hofKey[$jsfssVal['id']]];
+                    }
+//                    echo "<pre>"; print_r($finalArray); "<pre>"; die;
+
+                    if(isset($finalArray['jsfss_secc_families']['family_head']) && !empty($finalArray['jsfss_secc_families']['family_head'])) {
+                        $family_head_data = $finalArray['jsfss_secc_families']['family_head'];
+                    }
+//                    echo "<pre>"; print_r($family_head_data); "<pre>"; die;
+                    if (array_key_exists($secc_family_id, $finalArray['jsfss_secc_families']['family_member'])) { // jsfss_families:members
+                        $family_member = 1;
+                        $family_head = 0;
+                        $currMobile = $finalArray['jsfss_secc_families']['family_member'][$secc_family_id]['mobile'];
+                    } elseif (array_key_exists($secc_family_id, $finalArray['jsfss_secc_families']['family_head'])) { // jsfss_families:hof
+                        $family_member = 0;
+                        $family_head = 1;
+                        $currMobile = $finalArray['jsfss_secc_families']['family_head'][$secc_family_id]['mobile'];
+                    } else {
+                        $family_member = 0;
+                        $family_head = 0;
+                        $currMobile = 'NA';
+                    }
+                }
+
+            }
+
+//      todo: Account No. change========================================================================================
+            elseif ($activityTypeId == 7){
+
+                $seccFamilies = $connection->prepare("SELECT id, jsfss_secc_cardholder_id,name,fathername,uid,bank_master_id,branch_master_id,bank_account_no, rationcard_no FROM cardholder_activity_temps WHERE jsfss_secc_cardholder_id =?");
+                $seccFamilies->bindValue(1, $jsfssSeccCardholderId);
+                $seccFamilies->execute();
+                $seccFamiliesDetails    = $seccFamilies->fetchAll('assoc');
+                $secc_cardholder_id     = $seccFamiliesDetails[0]['jsfss_secc_cardholder_id'];
+
+                //echo "<pre>"; print_r($seccFamiliesDetails); "<pre>";// die;
+
+                if(!empty($nfsaCardholderDetaild)){
+                    $currAccount = $nfsaCardholderDetaild[0]['bank_account_no'];
+                }
+
+//                echo "<pre>"; print_r($currAccount); "<pre>"; die;
+            }
+
+//      todo: Uid No. change============================================================================================
+            elseif ($activityTypeId == 8){
+
+            }
+
+//      todo: Delete change=============================================================================================
+            elseif ($activityTypeId == 9){
+
+            }
+
+//      todo: for name change===========================================================================================
+            elseif ($activityTypeId == 10) {
+
+                $datas = $connection->prepare("SELECT rationcard_no,ack_no,cardtype_id,name,fathername FROM cardholder_activity_temps WHERE rgi_district_code=? AND rgi_block_code=? AND activity_type_id= '10' AND activity_flag= ? LIMIT 10");
+
+                $datas->bindValue(1, $rgi_district_code);
+                $datas->bindValue(2, $rgi_block_code);
+                $datas->bindValue(3, $activity_flag);
+                $datas->execute();
+                $nfsaRationcards = $datas->fetchAll('assoc');
+
+                if ($activity_type_id == '' || $activity_flag == '') {
+                    $this->Flash->error('Application Type and Application Status are mandatory');
+                    return $this->redirect(['action' => 'nfsaRationcardApprovalBso']);
+
+                }
+
+            } // condition: $activity_type_id == 10
+
+//      todo: HOF change=============================================================================================
+            elseif ($activityTypeId == 11){
+
+                $seccFamilies = $connection->prepare("SELECT id, jsfss_secc_cardholder_id,name,fathername,rationcard_no, cardtype_id FROM cardholder_activity_temps WHERE jsfss_secc_cardholder_id =?");
+                $seccFamilies->bindValue(1, $jsfssSeccCardholderId);
+                $seccFamilies->execute();
+                $seccFamiliesDetails    = $seccFamilies->fetchAll('assoc');
+                $secc_cardholder_id     = $seccFamiliesDetails[0]['jsfss_secc_cardholder_id'];
+
+                echo "<pre>"; print_r($seccFamiliesDetails); "<pre>"; die;
+
+                if(!empty($nfsaCardholderDetaild)){
+                    $currCard = $nfsaCardholderDetaild[0]['cardType_id'];
+                }
+
+//                echo "<pre>"; print_r($currCard); "<pre>"; die;
+            }
+
+        }
+        $this->set(compact('nfsaAppliedRationcardsDetails', 'seccFamiliesDetails', 'nfsaRationcardsDetaild', 'activityTypeId', 'activityType', 'currMobile','currAccount','family_head_data','hofId', 'secc_family_id', 'secc_cardholder_id','currAddress', 'currDealer','currCard'));
+    }
+
+//todo: BSO level approve details
+    public function approveDetails()
+    {
+
+        $this->autoRender = false;
+        $connection         = ConnectionManager::get('default');
+        $session_data       = $this->getRequest()->getSession()->read();
+        $loginUsrBlockCde   = $session_data['Auth']['User']['rgi_block_code'];
+        $loginUsrDistCde    = $session_data['Auth']['User']['rgi_district_code'];
+        $loginUsrId         = $session_data['Auth']['User']['id'];
+        $loginUsrNm         = $session_data['Auth']['User']['username'];
+        $group_id           = $this->getRequest()->getSession()->read('Auth.User.group_id');
+
+
+            if ($this->getRequest()->is('post')) {
+                $data = $this->getRequest()->getData();
+//                echo "<pre>"; print_r($data); "<pre>"; die;
+                $id             = $data['id'];// die;
+                $rejectReason   = '';
+                $appliedMob     = '';
+                $actvityFlag    = $data['activityFlag'];
+                $date           = date('Y-m-d H:i:s');
+                $ercmsLogsId    = Text::uuid();
+                $rationCard     = $data['rationCardNo'];
+                $label          = '1';
+                $oldNewActivity = '';
+                $msg            = "aghori";
+                $bank_master_id = '';
+                $accNo          = '';
+                if (array_key_exists('mobile', $data)) {
+                    $appliedMob = $data['mobile'];
+                }
+                if (array_key_exists('bnkMasterId', $data)) {
+                    $bank_master_id = $data['bnkMasterId'];
+                }
+                if (array_key_exists('bnkAcntNo', $data)) {
+                    $accNo = $data['bnkAcntNo'];
+                }
+                if ($actvityFlag == 2) {
+                    if (array_key_exists('rejectReason', $data)) {
+                        $rejectReason = $data['rejectReason'];
+                    }
+                }
+                $activityTypeId = $this->getRequest()->getSession()->read('activity_Type_Id'); //die();
+
+    //          todo: for New Application For Ration Card
+                    if ($activityTypeId == 1) {
+        //          todo: checking login block = applicant block
+                        $ackNo = $data['ackNo'];
+                        $remark = $data['remarks'];
+                        $approveRejFlag = $data['activity_flag'];
+        //                $activityTypeId = $data['activityId'];
+
+                        $getUidSeccCard = $connection->prepare("select rgi_block_code, id from cardholder_activity_temps where ack_no = ? and activity_type_id = ? and activity_flag = '0' ");
+                        $getUidSeccCard->bindValue(1, $ackNo);
+                        $getUidSeccCard->bindValue(2, $activityTypeId);
+                        $getUidSeccCard->execute();
+                        $uidSeccDatas = $getUidSeccCard->fetchAll('assoc');
+                        $rgiBlockCde = $uidSeccDatas[0]['rgi_block_code'];
+                        $secc_cardholder_id = $uidSeccDatas[0]['id'];
+
+                        $reqCount = count($uidSeccDatas);
+                        if ($reqCount != 1) {
+                            $this->Flash->error(" Invalid Acknowledgement NO.");
+        //              todo: return to DSO function
+                            return $this->redirect(['action' => '']);
+                        }
+                        /*if($loginUsrBlockCde == $rgiBlockCde){
+                            $this->Flash->error("Rationcard Already available for another Block");
+                            return $this->redirect(['action' => 'nfsaRationcardApprovalBso']);
+                        }*/
+
+                        if ($activityTypeId == 1 && $approveRejFlag == 1) {
+                            $getUid = $connection->prepare("select uid from family_activity_temps where secc_cardholder_id = ?");
+                            $getUid->bindValue(1, $secc_cardholder_id);
+                            $getUid->execute();
+                            $uidDatas = $getUid->fetchAll('assoc');
+
+                            //echo "<pre>"; print_r($uidDatas); "<pre>"; die;
+                            $memberUids = [];
+        //            $uidValue = $uidDatas[0]['uid'];
+                            if (!empty($uidDatas)) {
+                                foreach ($uidDatas as $uidKey => $uidValue) {
+                                    $uidVal = $uidValue['uid'];
+                                    $chkApprovedUid = $connection->prepare("SELECT uid FROM secc_families where uid='$uidVal'");
+                                    if (count($chkApprovedUid) > 0) {
+                                        $this->Flash->error("Acknowledgement No. " . $ackNo . " has duplicate uid. ");
+                                        return $this->redirect(['action' => 'nfsaRationcardApprovalBso']);
+                                    }
+                                }
+                            }
+
+        //              todo: updation in secc_cardholder_temps
+                            $aFlag = 1;
+                            $reqBy = 1;
+                            $bsoUid = '';
+                            $date = date('Y-m-d H:i:s');
+
+                            $updateSeccCardholderTemps = $connection->prepare("update cardholder_activity_temps set activity_flag = ?, modified_by = ?,requestedBy = ?,created_by = ?, bso_uid = ?, bso_remarks = ?, bso_modifiedDate = ? where ack_no = ? and activity_type_id = ? and activity_flag = ?");
+                            $updateSeccCardholderTemps->bindValue(1, $aFlag);
+                            $updateSeccCardholderTemps->bindValue(2, $loginUsrId);
+                            $updateSeccCardholderTemps->bindValue(3, $reqBy);
+                            $updateSeccCardholderTemps->bindValue(4, $loginUsrId);
+                            $updateSeccCardholderTemps->bindValue(5, $bsoUid);
+                            $updateSeccCardholderTemps->bindValue(6, $remark);
+                            $updateSeccCardholderTemps->bindValue(7, $date);
+                            $updateSeccCardholderTemps->bindValue(8, $ackNo);
+                            $updateSeccCardholderTemps->bindValue(9, $activityTypeId);
+                            $updateSeccCardholderTemps->bindValue(10, $aFlag);
+                            $updateCardholder = $updateSeccCardholderTemps->execute();
+
+
+        //              todo: updation in secc_family_temps
+                            if ($updateCardholder) {
+
+                                $updateSeccFamilyTemps = $connection->prepare("update family_activity_temps set activity_flag = ?, modified_by = ?,requestedBy = ?,created_by = ?, bso_uid = ?, bso_remarks = ?, bso_modifiedDate = ? where secc_cardholder_add_temp_id = ? and activity_type_id = ? and activity_flag = ?");
+                                $updateSeccFamilyTemps->bindValue(1, $aFlag);
+                                $updateSeccFamilyTemps->bindValue(2, $loginUsrId);
+                                $updateSeccFamilyTemps->bindValue(3, $reqBy);
+                                $updateSeccFamilyTemps->bindValue(4, $loginUsrId);
+                                $updateSeccFamilyTemps->bindValue(5, $bsoUid);
+                                $updateSeccFamilyTemps->bindValue(6, $remark);
+                                $updateSeccFamilyTemps->bindValue(7, $date);
+                                $updateSeccFamilyTemps->bindValue(8, $secc_cardholder_id);
+                                $updateSeccFamilyTemps->bindValue(9, $activityTypeId);
+                                $updateSeccFamilyTemps->bindValue(10, $aFlag);
+                                $updateFamily = $updateSeccFamilyTemps->execute();
+                            }
+
+        //              todo: insertion in jsfss ercms logs table
+                            if ($updateFamily) {
+                                $ercmsLogsId    = Text::uuid();
+                                $rationcard     = "";
+                                $label          = '1';
+                                $oldNewActivity = '';
+                                $msg            = "aghori";
+
+                                $inserErcmsLogs = $connection->prepare("insert into ercms_logs (id, rgi_district_code, user_id, user_name, group_id, rationcard_no, activity_type_id, activity_flag, label, oldActivity, newActivity, message, created) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)");
+                                $inserErcmsLogs->bindValue(1, $ercmsLogsId);
+                                $inserErcmsLogs->bindValue(2, $loginUsrDistCde);
+                                $inserErcmsLogs->bindValue(3, $loginUsrId);
+                                $inserErcmsLogs->bindValue(4, $loginUsrNm);
+                                $inserErcmsLogs->bindValue(5, $group_id);
+                                $inserErcmsLogs->bindValue(6, $rationcard);
+                                $inserErcmsLogs->bindValue(7, $activityTypeId);
+                                $inserErcmsLogs->bindValue(8, $aFlag);
+                                $inserErcmsLogs->bindValue(9, $label);
+                                $inserErcmsLogs->bindValue(10, $oldNewActivity);
+                                $inserErcmsLogs->bindValue(11, $oldNewActivity);
+                                $inserErcmsLogs->bindValue(12, $msg);
+                                $inserErcmsLogs->bindValue(13, $date);
+                                $updateErcms = $inserErcmsLogs->execute();
+                            }
+                            if ($updateErcms) {
+                                $this->Flash->success("Applicaton has been approved Successfully.");
+                                return $this->redirect(['action' => 'nfsaRationcardApprovalBso']);
+                            }
+                        }
+
+                    } // condition: for New application
+
+    //          todo: add family================================================================================================
+                    elseif ($activityTypeId == 2){
+
+//                        echo "update cardholder_activity_temps set activity_flag = $actvityFlag, modified_by =$loginUsrId, modified = $date, bso_remarks = $rejectReason where jsfss_secc_cardholder_id = $id "; die;
+
+                        $updateMob = $connection->prepare("update family_activity_temps set activity_flag = ?, modified_by =?, modified = ?, bso_remarks = ? where jsfss_secc_family_id = ?  ");
+                        $updateMob->bindValue(1, $actvityFlag);
+                        $updateMob->bindValue(2, $loginUsrId);
+                        $updateMob->bindValue(3, $date);
+                        $updateMob->bindValue(4, $rejectReason);
+                        $updateMob->bindValue(5, $id);
+                        $updateMob = $updateMob->execute();
+
+                        //          todo: after update insert into jsfss ercms logs
+                        if ($updateMob) {
+
+                            $insertJsfssLog = $connection->prepare("insert into jsfss_ercms_logs (id, rgi_district_code, user_id, user_name, group_id, rationcard_no, activity_type_id, activity_flag, label, oldActivity, newActivity, message, created ) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)");
+                            $insertJsfssLog->bindValue(1, $ercmsLogsId);
+                            $insertJsfssLog->bindValue(2, $loginUsrDistCde);
+                            $insertJsfssLog->bindValue(3, $loginUsrId);
+                            $insertJsfssLog->bindValue(4, $loginUsrNm);
+                            $insertJsfssLog->bindValue(5, $group_id);
+                            $insertJsfssLog->bindValue(6, $rationCard);
+                            $insertJsfssLog->bindValue(7, $activityTypeId);
+                            $insertJsfssLog->bindValue(8, $actvityFlag);
+                            $insertJsfssLog->bindValue(9, $label);
+                            $insertJsfssLog->bindValue(10, $oldNewActivity);
+                            $insertJsfssLog->bindValue(11, $oldNewActivity);
+                            $insertJsfssLog->bindValue(12, $msg);
+                            $insertJsfssLog->bindValue(13, $date);
+                            $insertJsfssLogs = $insertJsfssLog->execute();
+
+                            $this->Flash->success('Family Member has been verified.');
+                            return $this->redirect(['action' => 'nfsaRationcardApprovalBso']);
+                        }
+                    }
+    //          todo: address change============================================================================================
+                    elseif ($activityTypeId == 3){
+//                        echo "update cardholder_activity_temps set activity_flag = '$actvityFlag', modified_by ='$loginUsrId', modified = '$date', bso_remarks = '$rejectReason' where jsfss_secc_cardholder_id = $id  "; die;
+
+                        //          todo: update family_activity_temps
+                        $updateMob = $connection->prepare("update cardholder_activity_temps set activity_flag = ?, modified_by =?, modified = ?, bso_remarks = ? where jsfss_secc_cardholder_id = ?  ");
+                        $updateMob->bindValue(1, $actvityFlag);
+                        $updateMob->bindValue(2, $loginUsrId);
+                        $updateMob->bindValue(3, $date);
+                        $updateMob->bindValue(4, $rejectReason);
+                        $updateMob->bindValue(5, $id);
+                        $updateMob = $updateMob->execute();
+
+                        //          todo: after update insert into jsfss ercms logs
+                        if ($updateMob) {
+
+                            $insertJsfssLog = $connection->prepare("insert into jsfss_ercms_logs (id, rgi_district_code, user_id, user_name, group_id, rationcard_no, activity_type_id, activity_flag, label, oldActivity, newActivity, message, created ) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)");
+                            $insertJsfssLog->bindValue(1, $ercmsLogsId);
+                            $insertJsfssLog->bindValue(2, $loginUsrDistCde);
+                            $insertJsfssLog->bindValue(3, $loginUsrId);
+                            $insertJsfssLog->bindValue(4, $loginUsrNm);
+                            $insertJsfssLog->bindValue(5, $group_id);
+                            $insertJsfssLog->bindValue(6, $rationCard);
+                            $insertJsfssLog->bindValue(7, $activityTypeId);
+                            $insertJsfssLog->bindValue(8, $actvityFlag);
+                            $insertJsfssLog->bindValue(9, $label);
+                            $insertJsfssLog->bindValue(10, $oldNewActivity);
+                            $insertJsfssLog->bindValue(11, $oldNewActivity);
+                            $insertJsfssLog->bindValue(12, $msg);
+                            $insertJsfssLog->bindValue(13, $date);
+                            $insertJsfssLogs = $insertJsfssLog->execute();
+
+                            $this->Flash->success('Address has been verified.');
+                            return $this->redirect(['action' => 'nfsaRationcardApprovalBso']);
+                        }
+                    }
+
+    //          todo: dealer change=============================================================================================
+                    elseif ($activityTypeId == 4){
+    //          todo: update family_activity_temps
+                        $updateMob = $connection->prepare("update cardholder_activity_temps set activity_flag = ?, modified_by =?, modified = ?, bso_remarks = ? where jsfss_secc_cardholder_id = ?  ");
+                        $updateMob->bindValue(1, $actvityFlag);
+                        $updateMob->bindValue(2, $loginUsrId);
+                        $updateMob->bindValue(3, $date);
+                        $updateMob->bindValue(4, $rejectReason);
+                        $updateMob->bindValue(5, $id);
+                        $updateMob = $updateMob->execute();
+
+                        //          todo: after update insert into jsfss ercms logs
+                        if ($updateMob) {
+
+                            $insertJsfssLog = $connection->prepare("insert into jsfss_ercms_logs (id, rgi_district_code, user_id, user_name, group_id, rationcard_no, activity_type_id, activity_flag, label, oldActivity, newActivity, message, created ) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)");
+                            $insertJsfssLog->bindValue(1, $ercmsLogsId);
+                            $insertJsfssLog->bindValue(2, $loginUsrDistCde);
+                            $insertJsfssLog->bindValue(3, $loginUsrId);
+                            $insertJsfssLog->bindValue(4, $loginUsrNm);
+                            $insertJsfssLog->bindValue(5, $group_id);
+                            $insertJsfssLog->bindValue(6, $rationCard);
+                            $insertJsfssLog->bindValue(7, $activityTypeId);
+                            $insertJsfssLog->bindValue(8, $actvityFlag);
+                            $insertJsfssLog->bindValue(9, $label);
+                            $insertJsfssLog->bindValue(10, $oldNewActivity);
+                            $insertJsfssLog->bindValue(11, $oldNewActivity);
+                            $insertJsfssLog->bindValue(12, $msg);
+                            $insertJsfssLog->bindValue(13, $date);
+                            $insertJsfssLogs = $insertJsfssLog->execute();
+
+                            $this->Flash->success('Dealler has been verified.');
+                            return $this->redirect(['action' => 'nfsaRationcardApprovalBso']);
+                        }
+                    }
+
+    //          todo: card type change==========================================================================================
+                    elseif ($activityTypeId == 5){
+    //          todo: update cardholder_activity_temps
+                        $updateMob = $connection->prepare("update cardholder_activity_temps set activity_flag = ?, modified_by =?, modified = ?, bso_remarks = ? where jsfss_secc_cardholder_id = ?  ");
+                        $updateMob->bindValue(1, $actvityFlag);
+                        $updateMob->bindValue(2, $loginUsrId);
+                        $updateMob->bindValue(3, $date);
+                        $updateMob->bindValue(4, $rejectReason);
+                        $updateMob->bindValue(5, $id);
+                        $updateMob = $updateMob->execute();
+
+    //          todo: after update insert into jsfss ercms logs
+                        if ($updateMob) {
+
+                            $insertJsfssLog = $connection->prepare("insert into jsfss_ercms_logs (id, rgi_district_code, user_id, user_name, group_id, rationcard_no, activity_type_id, activity_flag, label, oldActivity, newActivity, message, created ) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)");
+                            $insertJsfssLog->bindValue(1, $ercmsLogsId);
+                            $insertJsfssLog->bindValue(2, $loginUsrDistCde);
+                            $insertJsfssLog->bindValue(3, $loginUsrId);
+                            $insertJsfssLog->bindValue(4, $loginUsrNm);
+                            $insertJsfssLog->bindValue(5, $group_id);
+                            $insertJsfssLog->bindValue(6, $rationCard);
+                            $insertJsfssLog->bindValue(7, $activityTypeId);
+                            $insertJsfssLog->bindValue(8, $actvityFlag);
+                            $insertJsfssLog->bindValue(9, $label);
+                            $insertJsfssLog->bindValue(10, $oldNewActivity);
+                            $insertJsfssLog->bindValue(11, $oldNewActivity);
+                            $insertJsfssLog->bindValue(12, $msg);
+                            $insertJsfssLog->bindValue(13, $date);
+                            $insertJsfssLogs = $insertJsfssLog->execute();
+
+                            $this->Flash->success('Card Type has been verified.');
+                            return $this->redirect(['action' => 'nfsaRationcardApprovalBso']);
+                        }
+                    }
+    //          todo: For mobile change=====================================================================================
+                    else if ($activityTypeId == 6) {
+//                        echo "bfh";die;
+                        $data = $this->getRequest()->getData();
+//                            echo "<pre>"; print_r($data); "<pre>"; die;
+//                        $activityTypeId = $this->getRequest()->getSession()->read('activity_Type_Id');
+                        /*$jsfssFamilyid  = $data['id']; //die;
+                        $rejectReason   = '';
+                        $appliedMob     = $data['mobile'];
+                        $actvityFlag    = $data['activityFlag'];
+                        $date           = date('Y-m-d H:i:s');
+                        $ercmsLogsId    = Text::uuid();
+                        $rationCard     = $data['rationCardNo'];
+                        $label          = '1';
+                        $oldNewActivity = '';
+                        $msg            = "approved by BSO";*/
+                        if ($actvityFlag == 2) {
+                            if (array_key_exists('rejectReason', $data)) {
+                                $rejectReason = $data['rejectReason'];
+                            }
+                        }
+        //          todo: check mobile no if already exists
+                        $mobile = $this->checkExistMobile();
+                        if (in_array($appliedMob, $mobile)) {
+//                            echo "yes"; die;
+                            $this->Flash->error('Mobile No. already exist.');
+                            return $this->redirect(['action' => 'nfsaRationcardApprovalBso']);
+                        } else {
+//                            echo "no"; die;
+
+        //          todo: update family_activity_temps
+                            $updateMob = $connection->prepare("update family_activity_temps set activity_flag = ?, modified_by =?, modified = ?, bso_remarks = ? where jsfss_secc_family_id = ?  ");
+                            $updateMob->bindValue(1, $actvityFlag);
+                            $updateMob->bindValue(2, $loginUsrId);
+                            $updateMob->bindValue(3, $date);
+                            $updateMob->bindValue(4, $rejectReason);
+                            $updateMob->bindValue(5, $id);
+                            $updateMob = $updateMob->execute();
+
+        //          todo: after update insert into jsfss ercms logs
+                            if ($updateMob) {
+                                $insertJsfssLog = $connection->prepare("insert into jsfss_ercms_logs (id, rgi_district_code, user_id, user_name, group_id, rationcard_no, activity_type_id, activity_flag, label, oldActivity, newActivity, message, created ) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)");
+                                $insertJsfssLog->bindValue(1, $ercmsLogsId);
+                                $insertJsfssLog->bindValue(2, $loginUsrDistCde);
+                                $insertJsfssLog->bindValue(3, $loginUsrId);
+                                $insertJsfssLog->bindValue(4, $loginUsrNm);
+                                $insertJsfssLog->bindValue(5, $group_id);
+                                $insertJsfssLog->bindValue(6, $rationCard);
+                                $insertJsfssLog->bindValue(7, $activityTypeId);
+                                $insertJsfssLog->bindValue(8, $actvityFlag);
+                                $insertJsfssLog->bindValue(9, $label);
+                                $insertJsfssLog->bindValue(10, $oldNewActivity);
+                                $insertJsfssLog->bindValue(11, $oldNewActivity);
+                                $insertJsfssLog->bindValue(12, $msg);
+                                $insertJsfssLog->bindValue(13, $date);
+                                $insertJsfssLogs = $insertJsfssLog->execute();
+
+                                $this->Flash->success('Mobile No. verified.');
+                                return $this->redirect(['action' => 'nfsaRationcardApprovalBso']);
+                            }
+                        }
+                    } // condition: for mobile change
+
+    //          todo: Account No. change========================================================================================
+                    elseif ($activityTypeId == 7){
+
+            //          todo: check account no if already exists
+                        $bankChk = $this->checkExistBankAcc($bank_master_id, $accNo);
+                        if (in_array($accNo, $bankChk)) {
+//                            echo "yes";
+                            $this->Flash->error('Bank Account. already exist.');
+                            return $this->redirect(['action' => 'nfsaRationcardApprovalBso']);
+                        } else {
+//                            echo "no";
+
+
+//                        echo "update cardholder_activity_temps set activity_flag = '$actvityFlag', modified_by ='$loginUsrId', modified = '$date', bso_remarks = '$rejectReason' where jsfss_secc_cardholder_id = $id  "; die;
+
+            //          todo: update family_activity_temps
+                            $updateMob = $connection->prepare("update cardholder_activity_temps set activity_flag = ?, modified_by =?, modified = ?, bso_remarks = ? where jsfss_secc_cardholder_id = ?  ");
+                            $updateMob->bindValue(1, $actvityFlag);
+                            $updateMob->bindValue(2, $loginUsrId);
+                            $updateMob->bindValue(3, $date);
+                            $updateMob->bindValue(4, $rejectReason);
+                            $updateMob->bindValue(5, $id);
+                            $updateMob = $updateMob->execute();
+
+                            //          todo: after update insert into jsfss ercms logs
+                            if ($updateMob) {
+
+                                $insertJsfssLog = $connection->prepare("insert into jsfss_ercms_logs (id, rgi_district_code, user_id, user_name, group_id, rationcard_no, activity_type_id, activity_flag, label, oldActivity, newActivity, message, created ) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)");
+                                $insertJsfssLog->bindValue(1, $ercmsLogsId);
+                                $insertJsfssLog->bindValue(2, $loginUsrDistCde);
+                                $insertJsfssLog->bindValue(3, $loginUsrId);
+                                $insertJsfssLog->bindValue(4, $loginUsrNm);
+                                $insertJsfssLog->bindValue(5, $group_id);
+                                $insertJsfssLog->bindValue(6, $rationCard);
+                                $insertJsfssLog->bindValue(7, $activityTypeId);
+                                $insertJsfssLog->bindValue(8, $actvityFlag);
+                                $insertJsfssLog->bindValue(9, $label);
+                                $insertJsfssLog->bindValue(10, $oldNewActivity);
+                                $insertJsfssLog->bindValue(11, $oldNewActivity);
+                                $insertJsfssLog->bindValue(12, $msg);
+                                $insertJsfssLog->bindValue(13, $date);
+                                $insertJsfssLogs = $insertJsfssLog->execute();
+
+                                $this->Flash->success('Bank Account No. verified.');
+                                return $this->redirect(['action' => 'nfsaRationcardApprovalBso']);
+                            }
+                        }
+                    }
+    //          todo: Uid No. change============================================================================================
+                    elseif ($activityTypeId == 8){
+
+                    }
+    //          todo: Delete change=============================================================================================
+                    elseif ($activityTypeId == 9){
+
+                    }
+    //          todo: for name change===========================================================================================
+                    elseif ($activityTypeId == 10) {
+
+                    }
+    //          todo: HOF change=============================================================================================
+                    elseif ($activityTypeId == 11){
+
+                }
+            } // post
+
+    }
+
+//todo: Selection and Listing at DSO level
+    public function nfsaRationcardApprovalDso()
+    {
+        $connection = ConnectionManager::get('default');
+        $nfsaRationcards = '';
+//        echo "<pre>"; print_r($this->getRequest()->getSession()->read()); "<pre>"; //die;
+        if ($this->request->getSession()->check('Auth')) {
+            $user_id            = $this->getRequest()->getSession()->read('Auth.User.id');
+            $username           = $this->getRequest()->getSession()->read('Auth.User.username');
+            $group_id           = $this->getRequest()->getSession()->read('Auth.User.group_id');
+            $rgi_district_code  = $this->getRequest()->getSession()->read('Auth.User.rgi_district_code');
+            $rgi_block_code     = $this->getRequest()->getSession()->read('Auth.User.rgi_block_code');
+        } else {
+            return $this->redirect($this->Auth->logout());
+        }//echo "== ".$rgi_block_code;die;
+        if ($group_id != '12') {
+            return $this->redirect($this->Auth->logout());
+        }
+        $this->viewBuilder()->setLayout('admin');
+        //$rgi_block_code  = $this->request->getSession()->read('Auth.User.rgi_block_code');
+        $query          = TableRegistry::getTableLocator()->get('SeccBlocks');
+        $SeccBlocks     = $query->find('list', ['keyField' => 'rgi_block_code', 'valueField' => 'name'])->where(['rgi_block_code' => $rgi_block_code])->toArray();
+        $villQuery      = TableRegistry::getTableLocator()->get('SeccVillageWards');
+        $villages       = $villQuery->find('list', ['keyField' => 'rgi_village_code', 'valueField' => 'name'])->where(['rgi_block_code' => $rgi_block_code])->toArray();
+
+//        echo "<pre>"; print_r($villages); "<pre>"; die;
+        $blockName          = $SeccBlocks[$rgi_block_code];
+        $applicationType    = TableRegistry::get('activity_types');
+        $query              = $applicationType->find('list', [
+            'keyField'      => 'id',
+            'valueField'    => 'name',
+            'order'         => 'name'
+        ]);
+        $activityType = $query->toArray();
+
+        $activity_type_id   = '';
+        if ($this->getRequest()->is('post')) {
+            $request_data       = $this->getRequest()->getData();
+//            echo "<pre>"; print_r($request_data); "<pre>"; die;
+            $rgi_village_code   = $request_data['rgi_village_code'];
+            $activity_type_id   = $request_data['activity_type_id'];// die;
+            $activity_flag      = $request_data['activity_flag'];
+
+//      todo: write activity & flag type in session=====================================================================
+            $this->getRequest()->getSession()->write('activity_Type_Id', $activity_type_id);
+            $this->getRequest()->getSession()->write('activity_Flag', $activity_flag);
+            $activityTypeId     = $this->getRequest()->getSession()->read('activity_Type_Id'); //die;
+            $activityFlag       = $this->getRequest()->getSession()->read('activity_Flag');
+
+//      todo: for New application=======================================================================================
+            if ($activityTypeId == 1) {
+
+                $datas = $connection->prepare("SELECT rationcard_no,ack_no,cardtype_id,name,fathername FROM cardholder_activity_temps WHERE rgi_district_code=? AND rgi_block_code=? AND activity_type_id=? AND activity_flag=? LIMIT 10");
+
+                $datas->bindValue(1, $rgi_district_code);
+                $datas->bindValue(2, $rgi_block_code);
+                $datas->bindValue(3, $activity_type_id);
+                $datas->bindValue(4, $activity_flag);
+                $datas->execute();
+                $nfsaRationcards = $datas->fetchAll('assoc');
+
+                if ($activity_type_id == '' || $activity_flag == '') {
+                    $this->Flash->error('Application Type and Application Status are mandatory');
+                    return $this->redirect(['action' => 'nfsaRationcardApprovalBso']);
+
+                }
+
+            } // condition: $activity_type_id == 1
+
+//      todo: add family================================================================================================
+            elseif ($activityTypeId == 2){
+
+            }
+
+//      todo: address change============================================================================================
+            elseif ($activityTypeId == 3){
+
+            }
+
+//      todo: dealer change=============================================================================================
+            elseif ($activityTypeId == 4){
+
+            }
+
+//      todo: card type change==========================================================================================
+            elseif ($activityTypeId == 5){
+
+            }
+
+//      todo: for mobile change=========================================================================================
+            elseif ($activityTypeId == 6) {
+
+                $datas = $connection->prepare("SELECT rationcard_no,ack_no_ercms,name,fathername FROM family_activity_temps WHERE rgi_district_code=? AND rgi_block_code=? AND activity_type_id= '6' AND activity_flag= ? LIMIT 10");
+
+                $datas->bindValue(1, $rgi_district_code);
+                $datas->bindValue(2, $rgi_block_code);
+                $datas->bindValue(3, $activity_flag);
+
+                $datas->execute();
+                $nfsaRationcards = $datas->fetchAll('assoc');
+
+                if ($activity_type_id == '' || $activity_flag == '') {
+                    $this->Flash->error('Application Type and Application Status are mandatory');
+                    return $this->redirect(['action' => 'nfsaRationcardApprovalBso']);
+
+                }
+            }
+//      todo: Account No. change========================================================================================
+            elseif ($activityTypeId == 7){
+
+            }
+
+//      todo: Uid No. change============================================================================================
+            elseif ($activityTypeId == 8){
+
+            }
+
+//      todo: Delete change=============================================================================================
+            elseif ($activityTypeId == 9){
+
+            }
+
+//      todo: for name change===========================================================================================
+            elseif ($activityTypeId == 10) {
+
+                $datas = $connection->prepare("SELECT rationcard_no,ack_no,cardtype_id,name,fathername FROM cardholder_activity_temps WHERE rgi_district_code=? AND rgi_block_code=? AND activity_type_id= '10' AND activity_flag= ? LIMIT 10");
+
+                $datas->bindValue(1, $rgi_district_code);
+                $datas->bindValue(2, $rgi_block_code);
+                $datas->bindValue(3, $activity_flag);
+                $datas->execute();
+                $nfsaRationcards = $datas->fetchAll('assoc');
+
+                if ($activity_type_id == '' || $activity_flag == '') {
+                    $this->Flash->error('Application Type and Application Status are mandatory');
+                    return $this->redirect(['action' => 'nfsaRationcardApprovalBso']);
+
+                }
+
+            } // condition: $activity_type_id == 10
+
+//      todo: HOF change=============================================================================================
+            elseif ($activityTypeId == 11){
+
+            }
+        }
+
+        $this->set(compact('blockName', 'villages', 'activityType', 'rgi_block_code', 'nfsaRationcards', 'activity_type_id'));
+
+
+
+    }
+
+//todo: DSO level detailed data
+    public function nfsaRationCardDataDso()
+    {
+        $connection         = ConnectionManager::get('default');
+        $activityTypeId     = '';
+        $rgi_district_code  = $this->getRequest()->getSession()->read('Auth.User.rgi_district_code');
+        $rgi_block_code     = $this->getRequest()->getSession()->read('Auth.User.rgi_block_code');
+        $activityTypeId     = $this->getRequest()->getSession()->read('activity_Type_Id'); //die();
+        $activityFlag       = $this->getRequest()->getSession()->read('activity_Flag'); //die;
+
+//      todo: activity Types array
+        $applicationType    = TableRegistry::get('activity_types');
+        $query              = $applicationType->find('list', [
+            'keyField'      => 'id',
+            'valueField'    => 'name',
+            'order'         => 'name'
+        ]);
+        $activityType = $query->toArray();
+
+
+        $finalArray = [];
+        $currMobile = '';
+        $currAccount = '';
+        $nfsaRationcardsDetaild = [];
+        $nfsaAppliedRationcardsDetails = [];
+        $seccFamiliesDetails = [];
+
+        $this->viewBuilder()->setLayout('admin');
+        if ($this->getRequest()->is('post')) {
+            $request_data   = $this->getRequest()->getData();
+//            echo "<pre>"; print_r($request_data); "<pre>"; die;
+            $ackNo          = $request_data['ackNo'];
+            $rationCardNo   = $request_data['rationNo'];
+
+//      todo: fetching Id  from cardholder_activity_temps for activity id: 1(family change)-----------------------------
+            $rationDatas = $connection->prepare("SELECT id, ack_no,name,fathername,mothername,cardtype_id,rgi_district_code,rgi_block_code,rgi_village_code FROM cardholder_activity_temps WHERE ack_no =?");
+            $rationDatas->bindValue(1, $ackNo);
+            $rationDatas->execute();
+            $nfsaAppliedRationcardsDetails  = $rationDatas->fetchAll('assoc');
+            $secc_cardholder_temps_id       = $nfsaAppliedRationcardsDetails[0]['id'];
 
 //      todo: fetching Id from jsfss_secc_families for activity id : 6(mobile change)-----------------------------------
             $rationData = $connection->prepare("SELECT id, rationcard_no,hof,name,mobile,fathername,mothername,cardtype_id,rgi_district_code,rgi_block_code,rgi_village_code FROM jsfss_secc_families WHERE rationcard_no =?");
@@ -1407,13 +2403,33 @@ class SeccCardholdersController extends AppController
 
 //      todo: fetching details from secc_family_temps for new application approbal--------------------------------------
             if ($activityTypeId == 1) {
-                //echo '1';
-//                $activityId   = $nfsaRationcardsDetaild[0]['activity_type_id'];
                 $seccFamilies = $connection->prepare("SELECT name,fathername,relation_id,mobile,uid,bank_master_id,branch_master_id,accountNo FROM family_activity_temps WHERE secc_cardholder_add_temp_id=?");
                 $seccFamilies->bindValue(1, $secc_cardholder_temps_id);
                 $seccFamilies->execute();
                 $seccFamiliesDetails = $seccFamilies->fetchAll('assoc');
-            } //      todo: fetching details from secc_family_temps for moobile no. change-------------------------
+            }
+
+//      todo: add family================================================================================================
+            elseif ($activityTypeId == 2){
+
+            }
+
+//      todo: address change============================================================================================
+            elseif ($activityTypeId == 3){
+
+            }
+
+//      todo: dealer change=============================================================================================
+            elseif ($activityTypeId == 4){
+
+            }
+
+//      todo: card type change==========================================================================================
+            elseif ($activityTypeId == 5){
+
+            }
+
+//      todo: fetching details from secc_family_temps for moobile no. change============================================
             elseif ($activityTypeId == 6) {
                 $seccFamilies = $connection->prepare("SELECT id, secc_family_id,name,fathername,relation_id,mobile,uid,rationcard_no,branch_master_id,accountNo, rationcard_no  FROM family_activity_temps WHERE ack_no_ercms =  ? and activity_type_id = ? and activity_flag = ?");
                 $seccFamilies->bindValue(1, $ackNo);
@@ -1438,10 +2454,12 @@ class SeccCardholdersController extends AppController
                     $family_member = 1;
                     $family_head = 0;
                     $currMobile = $finalArray['jsfss_secc_families']['family_member'][$secc_family_id]['mobile'];
+
                 } elseif (array_key_exists($secc_family_id, $finalArray['jsfss_secc_families']['family_head'])) { // jsfss_families:hof
                     $family_member = 0;
                     $family_head = 1;
                     $currMobile = $finalArray['jsfss_secc_families']['family_head'][$secc_family_id]['mobile'];
+
                 } else {
                     $family_member = 0;
                     $family_head = 0;
@@ -1449,35 +2467,79 @@ class SeccCardholdersController extends AppController
                 }
 
             }
+
+//      todo: Account No. change========================================================================================
+            elseif ($activityTypeId == 7){
+
+            }
+
+//      todo: Uid No. change============================================================================================
+            elseif ($activityTypeId == 8){
+
+            }
+
+//      todo: Delete change=============================================================================================
+            elseif ($activityTypeId == 9){
+
+            }
+
+//      todo: Delete change=============================================================================================
+            elseif ($activityTypeId == 9){
+
+            }
+
+//      todo: for name change===========================================================================================
+            elseif ($activityTypeId == 10) {
+
+                $datas = $connection->prepare("SELECT rationcard_no,ack_no,cardtype_id,name,fathername FROM cardholder_activity_temps WHERE rgi_district_code=? AND rgi_block_code=? AND activity_type_id= '10' AND activity_flag= ? LIMIT 10");
+
+                $datas->bindValue(1, $rgi_district_code);
+                $datas->bindValue(2, $rgi_block_code);
+                $datas->bindValue(3, $activity_flag);
+                $datas->execute();
+                $nfsaRationcards = $datas->fetchAll('assoc');
+
+                if ($activity_type_id == '' || $activity_flag == '') {
+                    $this->Flash->error('Application Type and Application Status are mandatory');
+                    return $this->redirect(['action' => 'nfsaRationcardApprovalBso']);
+
+                }
+
+            } // condition: $activity_type_id == 10
+
+//      todo: HOF change=============================================================================================
+            elseif ($activityTypeId == 11){
+
+            }
         }
         $this->set(compact('nfsaAppliedRationcardsDetails', 'seccFamiliesDetails', 'nfsaRationcardsDetaild', 'activityTypeId', 'activityType', 'currMobile'));
     }
 
-//todo: approve details
-    public function approveDetails()
+//todo: DSO level approve details
+    public function approveDetailsByDso()
     {
 
         $this->autoRender = false;
-        $connection = ConnectionManager::get('default');
-        $session_data = $this->getRequest()->getSession()->read();
-        $loginUsrBlockCde = $session_data['Auth']['User']['rgi_block_code'];
-        $loginUsrDistCde = $session_data['Auth']['User']['rgi_district_code'];
-        $loginUsrId = $session_data['Auth']['User']['id'];
-        $loginUsrNm = $session_data['Auth']['User']['username'];
-        $group_id = $this->getRequest()->getSession()->read('Auth.User.group_id');
+        $connection         = ConnectionManager::get('default');
+        $session_data       = $this->getRequest()->getSession()->read();
+        $loginUsrBlockCde   = $session_data['Auth']['User']['rgi_block_code'];
+        $loginUsrDistCde    = $session_data['Auth']['User']['rgi_district_code'];
+        $loginUsrId         = $session_data['Auth']['User']['id'];
+        $loginUsrNm         = $session_data['Auth']['User']['username'];
+        $group_id           = $this->getRequest()->getSession()->read('Auth.User.group_id');
 
         if ($this->getRequest()->is('post')) {
             $data = $this->getRequest()->getData();
-//          echo "<pre>"; print_r($data); "<pre>"; die;
+            //          echo "<pre>"; print_r($data); "<pre>"; die;
             $activityTypeId = $this->getRequest()->getSession()->read('activity_Type_Id'); //die();
 
-//      todo: for New Application For Ration Card
+//          todo: for New Application For Ration Card
             if ($activityTypeId == 1) {
-//          todo: checking login block = applicant block
+                //          todo: checking login block = applicant block
                 $ackNo = $data['ackNo'];
                 $remark = $data['remarks'];
                 $approveRejFlag = $data['activity_flag'];
-//                $activityTypeId = $data['activityId'];
+                //                $activityTypeId = $data['activityId'];
 
                 $getUidSeccCard = $connection->prepare("select rgi_block_code, id from cardholder_activity_temps where ack_no = ? and activity_type_id = ? and activity_flag = '0' ");
                 $getUidSeccCard->bindValue(1, $ackNo);
@@ -1490,7 +2552,7 @@ class SeccCardholdersController extends AppController
                 $reqCount = count($uidSeccDatas);
                 if ($reqCount != 1) {
                     $this->Flash->error(" Invalid Acknowledgement NO.");
-//              todo: return to DSO function
+                    //              todo: return to DSO function
                     return $this->redirect(['action' => '']);
                 }
                 /*if($loginUsrBlockCde == $rgiBlockCde){
@@ -1506,7 +2568,7 @@ class SeccCardholdersController extends AppController
 
                     //echo "<pre>"; print_r($uidDatas); "<pre>"; die;
                     $memberUids = [];
-//            $uidValue = $uidDatas[0]['uid'];
+                    //            $uidValue = $uidDatas[0]['uid'];
                     if (!empty($uidDatas)) {
                         foreach ($uidDatas as $uidKey => $uidValue) {
                             $uidVal = $uidValue['uid'];
@@ -1518,7 +2580,7 @@ class SeccCardholdersController extends AppController
                         }
                     }
 
-//              todo: updation in secc_cardholder_temps
+                    //              todo: updation in secc_cardholder_temps
                     $aFlag = 1;
                     $reqBy = 1;
                     $bsoUid = '';
@@ -1538,10 +2600,8 @@ class SeccCardholdersController extends AppController
                     $updateCardholder = $updateSeccCardholderTemps->execute();
 
 
-//              todo: updation in secc_family_temps
+                    //              todo: updation in secc_family_temps
                     if ($updateCardholder) {
-
-//                    echo "update secc_family_temps set activity_flag = $aFlag, modified_by = $loginUsrId,requestedBy = $reqBy,created_by = $loginUsrId, bso_uid = $bsoUid, bso_remarks = $remark, bso_modifiedDate = $date where secc_cardholder_temp_id = $secc_cardholder_temp_id and activity_type_id = $activityTypeId and  activity_flag = $aFlag"; die;
 
                         $updateSeccFamilyTemps = $connection->prepare("update family_activity_temps set activity_flag = ?, modified_by = ?,requestedBy = ?,created_by = ?, bso_uid = ?, bso_remarks = ?, bso_modifiedDate = ? where secc_cardholder_add_temp_id = ? and activity_type_id = ? and activity_flag = ?");
                         $updateSeccFamilyTemps->bindValue(1, $aFlag);
@@ -1557,15 +2617,13 @@ class SeccCardholdersController extends AppController
                         $updateFamily = $updateSeccFamilyTemps->execute();
                     }
 
-//              todo: insertion in jsfss ercms logs table
+                    //              todo: insertion in jsfss ercms logs table
                     if ($updateFamily) {
-                        $ercmsLogsId = Text::uuid();
-                        $rationcard = "";
-                        $label = '1';
+                        $ercmsLogsId    = Text::uuid();
+                        $rationcard     = "";
+                        $label          = '1';
                         $oldNewActivity = '';
-                        $msg = "aghori";
-
-//                    echo "insert into ercms_logs (id, rgi_district_code, user_id, user_name, group_id, rationcard_no, activity_type_id, activity_flag, label, oldActivity, newActivity, message, created) VALUES ($ercmsLogsId, $loginUsrDistCde, $loginUsrId, $loginUsrNm, $group_id, $rationcard, $activityTypeId, $aFlag, $label, $oldNewActivity, $oldNewActivity, $msg, $date )"; die;
+                        $msg            = "aghori";
 
                         $inserErcmsLogs = $connection->prepare("insert into ercms_logs (id, rgi_district_code, user_id, user_name, group_id, rationcard_no, activity_type_id, activity_flag, label, oldActivity, newActivity, message, created) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)");
                         $inserErcmsLogs->bindValue(1, $ercmsLogsId);
@@ -1591,27 +2649,44 @@ class SeccCardholdersController extends AppController
 
             } // condition: for New application
 
-//          todo: For mobile change
+//          todo: add family================================================================================================
+            elseif ($activityTypeId == 2){
+
+            }
+//          todo: address change============================================================================================
+            elseif ($activityTypeId == 3){
+
+            }
+//          todo: dealer change=============================================================================================
+            elseif ($activityTypeId == 4){
+
+            }
+//          todo: card type change==========================================================================================
+            elseif ($activityTypeId == 5){
+
+            }
+//          todo: For mobile change=====================================================================================
+
             else if ($activityTypeId == 6) {
                 $data = $this->getRequest()->getData();
-//                    echo "<pre>"; print_r($data); "<pre>"; die;
+//                                    echo "<pre>"; print_r($data); "<pre>"; die;
                 $activityTypeId = $this->getRequest()->getSession()->read('activity_Type_Id');
-                $id = $data['id'];
-                $rejectReason = '';
-                $appliedMob = $data['mobile'];
-                $actvityFlag = $data['activityFlag'];
-                $date = date('Y-m-d H:i:s');
-                $ercmsLogsId = Text::uuid();
-                $rationCard = $data['rationCardNo'];
-                $label = '1';
+                echo $id             = $data['id']; die;
+                $rejectReason   = '';
+                $appliedMob     = $data['mobile'];
+                $actvityFlag    = $data['activityFlag'];
+                $date           = date('Y-m-d H:i:s');
+                $ercmsLogsId    = Text::uuid();
+                $rationCard     = $data['rationCardNo'];
+                $label          = '1';
                 $oldNewActivity = '';
-                $msg = "aghori";
-                if ($actvityFlag == 2) {
+                $msg            = "aghori";
+                if ($actvityFlag == 4) {
                     if (array_key_exists('rejectReason', $data)) {
                         $rejectReason = $data['rejectReason'];
                     }
                 }
-//          todo: check mobile no if already exists
+    //          todo: check mobile no if already exists
                 $mobile = $this->checkExistMobile();
                 if (in_array($appliedMob, $mobile)) {
                     echo "yes";
@@ -1619,7 +2694,7 @@ class SeccCardholdersController extends AppController
                     return $this->redirect(['action' => 'nfsaRationcardApprovalBso']);
                 } else {
                     echo "no";
-//          todo: update family_activity_temps
+            // todo: update family_activity_temps
                     $updateMob = $connection->prepare("update family_activity_temps set activity_flag = ?, modified_by =?, modified = ?, bso_remarks = ? where id = ?  ");
                     $updateMob->bindValue(1, $actvityFlag);
                     $updateMob->bindValue(2, $loginUsrId);
@@ -1628,14 +2703,29 @@ class SeccCardholdersController extends AppController
                     $updateMob->bindValue(5, $id);
                     $updateMob = $updateMob->execute();
 
-//          todo: after update insert into jsfss ercms logs
-                    if ($updateMob) {
+                    if(!$updateMob){
+                        $this->Flash->errorr('Mobile No. cant be change, data not available family_activity_temps.');
+                        return $this->redirect(['action' => 'nfsaRationcardApprovalDso']);
+                    }
 
-                        echo "insert into ercms_logs (id, rgi_district_code, user_id, user_name, group_id, rationcard_no, activity_type_id, activity_flag, label, oldActivity, newActivity, message, created, ) VALUES ($ercmsLogsId,$loginUsrDistCde,$loginUsrId,$loginUsrNm,$group_id,$rationCard,$activityTypeId,$actvityFlag,$label,$oldNewActivity,$oldNewActivity,$msg,$date)";
-                        die;
+                    // todo: after update update jsfss_secc_families
+                    if($updateMob) {
+//                        echo "update secc_families set mobile =$appliedMob, modified_by =$loginUsrId, modified = $date where rationcard_no = $rationCard  "; die;
+                        $updateSeccFamilies = $connection->prepare("update jsfss_secc_families set mobile =?, modified_by =?, modified = ? where secc_family_id = ?  ");
+                        $updateSeccFamilies->bindValue(1, $appliedMob);
+                        $updateSeccFamilies->bindValue(2, $loginUsrId);
+                        $updateSeccFamilies->bindValue(3, $date);
+                        $updateSeccFamilies->bindValue(4, $id);
+                        $updateccFamilies = $updateSeccFamilies->execute();
 
+                        $this->Flash->errorr('Mobile No. cant be change, data not available jsfss_secc_families.');
+                        return $this->redirect(['action' => 'nfsaRationcardApprovalDso']);
+                    }
 
-                        $insertJsfssLog = $connection->prepare("insert into ercms_logs (id, rgi_district_code, user_id, user_name, group_id, rationcard_no, activity_type_id, activity_flag, label, oldActivity, newActivity, message, created, ) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)");
+                    // todo: after update insert into jsfss ercms logs
+                    if ($updateccFamilies) {
+
+                        $insertJsfssLog = $connection->prepare("insert into jsfss_ercms_logs (id, rgi_district_code, user_id, user_name, group_id, rationcard_no, activity_type_id, activity_flag, label, oldActivity, newActivity, message, created ) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)");
                         $insertJsfssLog->bindValue(1, $ercmsLogsId);
                         $insertJsfssLog->bindValue(2, $loginUsrDistCde);
                         $insertJsfssLog->bindValue(3, $loginUsrId);
@@ -1650,124 +2740,33 @@ class SeccCardholdersController extends AppController
                         $insertJsfssLog->bindValue(12, $msg);
                         $insertJsfssLog->bindValue(13, $date);
                         $insertJsfssLogs = $insertJsfssLog->execute();
+
+                        $this->Flash->success('Mobile No. verified.');
+                        return $this->redirect(['action' => 'nfsaRationcardApprovalBso']);
                     }
                 }
             } // condition: for mobile change
+            //          todo: Account No. change========================================================================================
+            elseif ($activityTypeId == 7){
 
-        } // post
+            }
+            //          todo: Uid No. change============================================================================================
+            elseif ($activityTypeId == 8){
 
-    } // approveDetails
+            }
+            //          todo: Delete change=============================================================================================
+            elseif ($activityTypeId == 9){
 
-
-//todo: Selection and Listing at DSO level
-    public function nfsaRationcardApprovalDso()
-    {
-        echo "aghori"; die;
-        $connection = ConnectionManager::get('default');
-        $nfsaRationcards = '';
-        //echo "<pre>"; print_r($this->getRequest()->getSession()->read()); "<pre>"; //die;
-        if ($this->request->getSession()->check('Auth')) {
-            $user_id = $this->getRequest()->getSession()->read('Auth.User.id');
-            $username = $this->getRequest()->getSession()->read('Auth.User.username');
-            $group_id = $this->getRequest()->getSession()->read('Auth.User.group_id');
-            $rgi_district_code = $this->getRequest()->getSession()->read('Auth.User.rgi_district_code');
-            $rgi_block_code = $this->getRequest()->getSession()->read('Auth.User.rgi_block_code');
-        } else {
-            return $this->redirect($this->Auth->logout());
-        }//echo "== ".$rgi_block_code;die;
-        if ($group_id != '20') {
-            return $this->redirect($this->Auth->logout());
-        }
-        $this->viewBuilder()->setLayout('admin');
-        //$rgi_block_code  = $this->request->getSession()->read('Auth.User.rgi_block_code');
-        $query = TableRegistry::getTableLocator()->get('SeccBlocks');
-        $SeccBlocks = $query->find('list', ['keyField' => 'rgi_block_code', 'valueField' => 'name'])->where(['rgi_block_code' => $rgi_block_code])->toArray();
-        $villQuery = TableRegistry::getTableLocator()->get('SeccVillageWards');
-        $villages = $villQuery->find('list', ['keyField' => 'rgi_village_code', 'valueField' => 'name'])->where(['rgi_block_code' => $rgi_block_code])->toArray();
-
-//        echo "<pre>"; print_r($villages); "<pre>"; die;
-        $blockName = $SeccBlocks[$rgi_block_code];
-        $applicationType = TableRegistry::get('activity_types');
-        $query = $applicationType->find('list', [
-            'keyField' => 'id',
-            'valueField' => 'name',
-            'order' => 'name'
-        ]);
-        $activityType = $query->toArray();
-
-        $activity_type_id = '';
-        if ($this->getRequest()->is('post')) {
-            $request_data = $this->getRequest()->getData();
-            $rgi_village_code = $request_data['rgi_village_code'];
-            $activity_type_id = $request_data['activity_type_id'];
-            $activity_flag = $request_data['activity_flag'];
-
-//      todo: write activity & flag type in session
-            $this->getRequest()->getSession()->write('activity_Type_Id', $activity_type_id);
-            $this->getRequest()->getSession()->write('activity_Flag', $activity_flag);
-            $activityTypeId = $this->getRequest()->getSession()->read('activity_Type_Id');
-            $activityFlag = $this->getRequest()->getSession()->read('activity_Flag');
-
-//      todo: for New application=====================================================================
-            if ($activityTypeId == 1) {
-
-                $datas = $connection->prepare("SELECT rationcard_no,ack_no,cardtype_id,name,fathername FROM cardholder_activity_temps WHERE rgi_district_code=? AND rgi_block_code=? AND activity_type_id=? AND activity_flag=? LIMIT 10");
-
-                $datas->bindValue(1, $rgi_district_code);
-                $datas->bindValue(2, $rgi_block_code);
-                $datas->bindValue(3, $activity_type_id);
-                $datas->bindValue(4, $activity_flag);
-                $datas->execute();
-                $nfsaRationcards = $datas->fetchAll('assoc');
-
-//                echo "<pre>"; print_r($nfsaRationcards); "<pre>"; die;
-
-                if ($activity_type_id == '' || $activity_flag == '') {
-                    $this->Flash->error('Application Type and Application Status are mandatory');
-                    return $this->redirect(['action' => 'nfsaRationcardApprovalBso']);
-                }
-
-            } // condition: $activity_type_id == 1
-//      todo: for name change==========================================================================
+            }
+            //          todo: for name change===========================================================================================
             elseif ($activityTypeId == 10) {
 
-                $datas = $connection->prepare("SELECT rationcard_no,ack_no,cardtype_id,name,fathername FROM cardholder_activity_temps WHERE rgi_district_code=? AND rgi_block_code=? AND activity_type_id= '10' AND activity_flag= ? LIMIT 10");
-
-                $datas->bindValue(1, $rgi_district_code);
-                $datas->bindValue(2, $rgi_block_code);
-                $datas->bindValue(3, $activity_flag);
-                $datas->execute();
-                $nfsaRationcards = $datas->fetchAll('assoc');
-
-                if ($activity_type_id == '' || $activity_flag == '') {
-                    $this->Flash->error('Application Type and Application Status are mandatory');
-                    return $this->redirect(['action' => 'nfsaRationcardApprovalBso']);
-
-                }
-
-            } // condition: $activity_type_id == 10
-
-//      todo: for mobile change
-            elseif ($activityTypeId == 6) {
-
-                $datas = $connection->prepare("SELECT rationcard_no,ack_no_ercms,name,fathername FROM family_activity_temps WHERE rgi_district_code=? AND rgi_block_code=? AND activity_type_id= '6' AND activity_flag= ? LIMIT 10");
-
-                $datas->bindValue(1, $rgi_district_code);
-                $datas->bindValue(2, $rgi_block_code);
-                $datas->bindValue(3, $activity_flag);
-
-                $datas->execute();
-                $nfsaRationcards = $datas->fetchAll('assoc');
-
-                if ($activity_type_id == '' || $activity_flag == '') {
-                    $this->Flash->error('Application Type and Application Status are mandatory');
-                    return $this->redirect(['action' => 'nfsaRationcardApprovalBso']);
-
-                }
             }
+            //          todo: HOF change=============================================================================================
+            elseif ($activityTypeId == 11){
 
-        }
-        $this->set(compact('blockName', 'villages', 'activityType', 'rgi_block_code', 'nfsaRationcards', 'activity_type_id'));
+            }
+        } // post
+
     }
-
 }

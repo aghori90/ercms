@@ -281,27 +281,30 @@ $this->Html->script('injection.js')
 <!--todo: for mobile change -->
 <?php
 }
-elseif ($activityTypeId == 6) { ?>
+// todo : Add Family=======================================================================
+elseif ($activityTypeId == 2) { ?>
     <table class="table table-hover">
         <tbody>
         <tr>
-            <td scope="col"><b>Acknowledgement No :</b></td>
+            <td scope="col"><b>RationCard No :</b></td>
             <td>
                 <?php
-                if ($nfsaAppliedRationcardsDetails[0]['ack_no'] == '') {
+                $hofData = array_keys($family_head_data);
+                $hofId = $hofData[0];
+                if ($family_head_data[$hofId] == '') {
                     echo "NA";
                 } else {
-                    echo $nfsaAppliedRationcardsDetails[0]['ack_no'];
+                    echo $family_head_data[$hofId]['rationcard_no'];
                 }
                 ?>
             </td>
             <td scope="col"><b>Name :</b></td>
             <td>
                 <?php
-                if ($nfsaAppliedRationcardsDetails[0]['name'] == '') {
+                if ($family_head_data[$hofId]['name'] == '') {
                     echo "NA";
                 } else {
-                    echo $nfsaAppliedRationcardsDetails[0]['name'];
+                    echo $family_head_data[$hofId]['name'];
                 }
                 ?>
             </td>
@@ -310,20 +313,20 @@ elseif ($activityTypeId == 6) { ?>
             <td scope="col"><b>Father Name :</b></td>
             <td>
                 <?php
-                if ($nfsaAppliedRationcardsDetails[0]['fathername'] == '') {
+                if ($family_head_data[$hofId]['fathername'] == '') {
                     echo "NA";
                 } else {
-                    echo $nfsaAppliedRationcardsDetails[0]['fathername'];
+                    echo $family_head_data[$hofId]['fathername'];
                 }
                 ?>
             </td>
             <td scope="col"><b>Mother Name :</b></td>
             <td>
                 <?php
-                if ($nfsaAppliedRationcardsDetails[0]['mothername'] == '') {
+                if ($family_head_data[$hofId]['mothername'] == '') {
                     echo "NA";
                 } else {
-                    echo $nfsaAppliedRationcardsDetails[0]['mothername'];
+                    echo $family_head_data[$hofId]['mothername'];
                 }
                 ?>
             </td>
@@ -332,20 +335,20 @@ elseif ($activityTypeId == 6) { ?>
             <td scope="col"><b>Card Type :</b></td>
             <td>
                 <?php
-                if ($nfsaAppliedRationcardsDetails[0]['cardtype_id'] == '') {
+                if ($family_head_data[$hofId]['cardtype_id'] == '') {
                     echo "NA";
                 } else {
-                    echo $nfsaAppliedRationcardsDetails[0]['cardtype_id'];
+                    echo $family_head_data[$hofId]['cardtype_id'];
                 }
                 ?>
             </td>
             <td scope="col"><b>District Name :</b></td>
             <td>
                 <?php
-                if ($nfsaAppliedRationcardsDetails[0]['rgi_district_code'] == '') {
+                if ($family_head_data[$hofId]['rgi_district_code'] == '') {
                     echo "NA";
                 } else {
-                    echo $nfsaAppliedRationcardsDetails[0]['rgi_district_code'];
+                    echo $family_head_data[$hofId]['rgi_district_code'];
                 }
                 ?>
             </td>
@@ -354,20 +357,20 @@ elseif ($activityTypeId == 6) { ?>
             <td scope="col"><b>Block Name :</b></td>
             <td>
                 <?php
-                if ($nfsaAppliedRationcardsDetails[0]['rgi_block_code'] == '') {
+                if ($family_head_data[$hofId]['rgi_block_code'] == '') {
                     echo "NA";
                 } else {
-                    echo $nfsaAppliedRationcardsDetails[0]['rgi_block_code'];
+                    echo $family_head_data[$hofId]['rgi_block_code'];
                 }
                 ?>
             </td>
             <td scope="col"><b>Village Name :</b></td>
             <td>
                 <?php
-                if ($nfsaAppliedRationcardsDetails[0]['rgi_village_code'] == '') {
+                if ($family_head_data[$hofId]['rgi_village_code'] == '') {
                     echo "NA";
                 } else {
-                    echo $nfsaAppliedRationcardsDetails[0]['rgi_village_code'];
+                    echo $family_head_data[$hofId]['rgi_village_code'];
                 }
                 ?>
             </td>
@@ -387,7 +390,779 @@ elseif ($activityTypeId == 6) { ?>
                 <tbody class="headClr">
                 <tr align="center">
                     <td>#</td>
-                    <!--                    <td>Ration Card No</td>-->
+                    <td>Ration Card No</td>
+                    <td>Name</td>
+                    <td>Father Name</td>
+                    <td>Action</td>
+
+                </tr>
+                </tbody>
+                <?php
+                if (!empty($seccFamiliesDetails)) {
+                    $SlNo = 1;
+                    foreach ($seccFamiliesDetails as $key => $value) {
+//                        echo $secc_family_id;
+//                        echo "<pre>"; print_r($seccFamiliesDetails); "<pre>"; die;
+                        ?>
+                        <tr align="center">
+                            <td><?php echo $SlNo; ?></td>
+                            <td><?php echo $value['rationcard_no'];?></td>
+                            <td><?php echo $value['name']; ?></td>
+                            <td><?php echo $value['fathername']; ?></td>
+                            <td>
+                                <?php echo $this->Form->create('mobApproval', ['url' => ['controller' => 'SeccCardholders', 'action' => 'approveDetails']]); ?>
+                                <?php echo $this->Form->hidden('id', ['value' => $secc_family_id]); ?>
+                                <?php echo $this->Form->hidden('rationCardNo', ['value' => $value['rationcard_no']]); ?>
+                                <?php echo $this->Form->hidden('activityFlag', ['id'=>'activityFlag']); ?>
+                                <button type="submit" class="btn btn-outline-success verify" <?php echo $value['id']; ?> > Verify </button>
+
+                                <!-- Trigger the modal with a button -->
+                                <button type="button" class="btn btn-outline-danger reject" data-toggle="modal"
+                                        data-target="#myModal">Reject
+                                </button>
+                                <!-- Modal -->
+                                <div id="myModal" class="modal fade" role="dialog">
+                                    <div class="modal-dialog">
+                                        <!-- Modal content-->
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                <button type="button" class="close" data-dismiss="modal">&times;
+                                                </button>
+                                                <h4 class="modal-title">Rejection Reason</h4>
+                                            </div>
+                                            <div class="modal-body">
+                                                <?php echo $this->Form->control('rejectReason', ['label' => '', 'class' => 'form-control txtOnly', 'placeholder' => 'Enter Reason For Rejection']); ?>
+                                            </div>
+                                            <div class="modal-footer">
+                                                <button type="button" class="btn btn-default" data-dismiss="modal"> Close </button>
+                                                <button type="submit" class="btn btn-outline-danger" <?php echo $value['id']; ?> > Submit </button>
+                                            </div>
+                                        </div>
+
+                                    </div>
+                                </div>
+                                <?php echo $this->Form->end(); ?>
+                            </td>
+                        </tr>
+                        <?php
+                        $SlNo++;
+                    }
+                } else {
+                    ?>
+                    <tr>
+                        <td colspan="5">Sorry ! No Records Found.</td>
+                    </tr>
+                <?php }
+                //                <?php } ?>
+            </table>
+        </div>
+        <!--        </fieldset>-->
+    </div>
+
+<?php }
+// todo : Address Change===================================================================
+elseif ($activityTypeId == 3) { ?>
+    <table class="table table-hover">
+        <tbody>
+        <tr>
+            <td scope="col"><b>RationCard No :</b></td>
+            <td>
+                <?php
+                if ($nfsaRationcardsDetaild[0]['rationcard_no'] == '') {
+                    echo "NA";
+                } else {
+                    echo $nfsaRationcardsDetaild[0]['rationcard_no'];
+                }
+                ?>
+            </td>
+            <td scope="col"><b>Name :</b></td>
+            <td>
+                <?php
+                if ($nfsaRationcardsDetaild[0]['name'] == '') {
+                    echo "NA";
+                } else {
+                    echo $nfsaRationcardsDetaild[0]['name'];
+                }
+                ?>
+            </td>
+        </tr>
+        <tr>
+            <td scope="col"><b>Father Name :</b></td>
+            <td>
+                <?php
+                if ($nfsaRationcardsDetaild[0]['fathername'] == '') {
+                    echo "NA";
+                } else {
+                    echo $nfsaRationcardsDetaild[0]['fathername'];
+                }
+                ?>
+            </td>
+            <td scope="col"><b>Mother Name :</b></td>
+            <td>
+                <?php
+                if ($nfsaRationcardsDetaild[0]['mothername'] == '') {
+                    echo "NA";
+                } else {
+                    echo $nfsaRationcardsDetaild[0]['mothername'];
+                }
+                ?>
+            </td>
+        </tr>
+        <tr>
+            <td scope="col"><b>Card Type :</b></td>
+            <td>
+                <?php
+                if ($nfsaRationcardsDetaild[0]['cardtype_id'] == '') {
+                    echo "NA";
+                } else {
+                    echo $nfsaRationcardsDetaild[0]['cardtype_id'];
+                }
+                ?>
+            </td>
+            <td scope="col"><b>District Name :</b></td>
+            <td>
+                <?php
+                if ($nfsaRationcardsDetaild[0]['rgi_district_code'] == '') {
+                    echo "NA";
+                } else {
+                    echo $nfsaRationcardsDetaild[0]['rgi_district_code'];
+                }
+                ?>
+            </td>
+        </tr>
+        <tr>
+            <td scope="col"><b>Block Name :</b></td>
+            <td>
+                <?php
+                if ($nfsaRationcardsDetaild[0]['rgi_block_code'] == '') {
+                    echo "NA";
+                } else {
+                    echo $nfsaRationcardsDetaild[0]['rgi_block_code'];
+                }
+                ?>
+            </td>
+            <td scope="col"><b>Village Name :</b></td>
+            <td>
+                <?php
+                if ($nfsaRationcardsDetaild[0]['rgi_village_code'] == '') {
+                    echo "NA";
+                } else {
+                    echo $nfsaRationcardsDetaild[0]['rgi_village_code'];
+                }
+                ?>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+    </div>
+    </fieldset>
+    </div>
+    <!-- Family Details-->
+    <div class="container-fluid table ">
+        <div class="card-header bg-primary text-white">Family Details</div>
+        <!--        <fieldset>-->
+        <!--            <legend>--><? //= __('Family Details:') ?><!--</legend>-->
+        <div class="row">
+            <table class="table table-bordered">
+                <tbody class="headClr">
+                <tr align="center">
+                    <td>#</td>
+                    <td>Ration Card No</td>
+                    <td>Name</td>
+                    <td>Father Name</td>
+                    <td>Existing Address</td>
+                    <td>Applied Address</td>
+                    <td>Action</td>
+                </tr>
+                </tbody>
+                <?php
+                if (!empty($seccFamiliesDetails)) {
+                    $SlNo = 1;
+                    foreach ($seccFamiliesDetails as $key => $value) {
+
+//                        echo "<pre>"; print_r($seccFamiliesDetails); "<pre>"; die;
+                        ?>
+                        <tr align="center">
+                            <td><?php echo $SlNo; ?></td>
+                            <td><?php echo $value['rationcard_no'];?></td>
+                            <td><?php echo $value['name']; ?></td>
+                            <td><?php echo $value['fathername']; ?></td>
+                            <td>
+                                <?php
+                                if ($currAddress == '') {
+                                    echo 'NA';
+                                } else {
+                                    echo $currAddress;
+                                }
+                                ?>
+                            </td>
+                            <td>
+                                <?php
+                                if ($value['res_address'] == '') {
+                                    echo 'NA';
+                                } else {
+                                    echo $value['res_address'];
+                                }
+                                ?>
+                            </td>
+                            <td>
+                                <?php echo $this->Form->create('mobApproval', ['url' => ['controller' => 'SeccCardholders', 'action' => 'approveDetails']]); ?>
+                                <?php echo $this->Form->hidden('id', ['value' => $secc_cardholder_id]); ?>
+                                <?php echo $this->Form->hidden('rationCardNo', ['value' => $value['rationcard_no']]); ?>
+                                <?php echo $this->Form->hidden('address', ['value' => $value['res_address']]); ?>
+                                <?php echo $this->Form->hidden('activityFlag', ['id'=>'activityFlag']); ?>
+                                <button type="submit" class="btn btn-outline-success verify" <?php echo $value['id']; ?> > Verify </button>
+
+                                <!-- Trigger the modal with a button -->
+                                <button type="button" class="btn btn-outline-danger reject" data-toggle="modal"
+                                        data-target="#myModal">Reject
+                                </button>
+                                <!-- Modal -->
+                                <div id="myModal" class="modal fade" role="dialog">
+                                    <div class="modal-dialog">
+                                        <!-- Modal content-->
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                <button type="button" class="close" data-dismiss="modal">&times;
+                                                </button>
+                                                <h4 class="modal-title">Rejection Reason</h4>
+                                            </div>
+                                            <div class="modal-body">
+                                                <?php echo $this->Form->control('rejectReason', ['label' => '', 'class' => 'form-control txtOnly', 'placeholder' => 'Enter Reason For Rejection']); ?>
+                                            </div>
+                                            <div class="modal-footer">
+                                                <button type="button" class="btn btn-default" data-dismiss="modal"> Close </button>
+                                                <button type="submit" class="btn btn-outline-danger" <?php echo $value['id']; ?> > Submit </button>
+                                            </div>
+                                        </div>
+
+                                    </div>
+                                </div>
+                                <?php echo $this->Form->end(); ?>
+                            </td>
+                        </tr>
+                        <?php
+                        $SlNo++;
+                    }
+                } else {
+                    ?>
+                    <tr>
+                        <td colspan="5">Sorry ! No Records Found.</td>
+                    </tr>
+                <?php }
+                //                <?php } ?>
+            </table>
+        </div>
+        <!--        </fieldset>-->
+    </div>
+
+<?php }
+// todo: dealer change===============================================================
+elseif ($activityTypeId == 4) { ?>
+
+    <table class="table table-hover">
+        <tbody>
+        <tr>
+            <td scope="col"><b>RationCard No :</b></td>
+            <td>
+                <?php
+                if ($nfsaRationcardsDetaild[0]['rationcard_no'] == '') {
+                    echo "NA";
+                } else {
+                    echo $nfsaRationcardsDetaild[0]['rationcard_no'];
+                }
+                ?>
+            </td>
+            <td scope="col"><b>Name :</b></td>
+            <td>
+                <?php
+                if ($nfsaRationcardsDetaild[0]['name'] == '') {
+                    echo "NA";
+                } else {
+                    echo $nfsaRationcardsDetaild[0]['name'];
+                }
+                ?>
+            </td>
+        </tr>
+        <tr>
+            <td scope="col"><b>Father Name :</b></td>
+            <td>
+                <?php
+                if ($nfsaRationcardsDetaild[0]['fathername'] == '') {
+                    echo "NA";
+                } else {
+                    echo $nfsaRationcardsDetaild[0]['fathername'];
+                }
+                ?>
+            </td>
+            <td scope="col"><b>Mother Name :</b></td>
+            <td>
+                <?php
+                if ($nfsaRationcardsDetaild[0]['mothername'] == '') {
+                    echo "NA";
+                } else {
+                    echo $nfsaRationcardsDetaild[0]['mothername'];
+                }
+                ?>
+            </td>
+        </tr>
+        <tr>
+            <td scope="col"><b>Card Type :</b></td>
+            <td>
+                <?php
+                if ($nfsaRationcardsDetaild[0]['cardtype_id'] == '') {
+                    echo "NA";
+                } else {
+                    echo $nfsaRationcardsDetaild[0]['cardtype_id'];
+                }
+                ?>
+            </td>
+            <td scope="col"><b>District Name :</b></td>
+            <td>
+                <?php
+                if ($nfsaRationcardsDetaild[0]['rgi_district_code'] == '') {
+                    echo "NA";
+                } else {
+                    echo $nfsaRationcardsDetaild[0]['rgi_district_code'];
+                }
+                ?>
+            </td>
+        </tr>
+        <tr>
+            <td scope="col"><b>Block Name :</b></td>
+            <td>
+                <?php
+                if ($nfsaRationcardsDetaild[0]['rgi_block_code'] == '') {
+                    echo "NA";
+                } else {
+                    echo $nfsaRationcardsDetaild[0]['rgi_block_code'];
+                }
+                ?>
+            </td>
+            <td scope="col"><b>Village Name :</b></td>
+            <td>
+                <?php
+                if ($nfsaRationcardsDetaild[0]['rgi_village_code'] == '') {
+                    echo "NA";
+                } else {
+                    echo $nfsaRationcardsDetaild[0]['rgi_village_code'];
+                }
+                ?>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+    </div>
+    </fieldset>
+    </div>
+    <!-- Family Details-->
+    <div class="container-fluid table ">
+        <div class="card-header bg-primary text-white">Family Details</div>
+        <!--        <fieldset>-->
+        <!--            <legend>--><? //= __('Family Details:') ?><!--</legend>-->
+        <div class="row">
+            <table class="table table-bordered">
+                <tbody class="headClr">
+                <tr align="center">
+                    <td>#</td>
+                    <td>Ration Card No</td>
+                    <td>Name</td>
+                    <td>Father Name</td>
+                    <td>Existing Dealer</td>
+                    <td>Applied Dealer</td>
+                    <td>Action</td>
+                </tr>
+                </tbody>
+                <?php
+                if (!empty($seccFamiliesDetails)) {
+                    $SlNo = 1;
+                    foreach ($seccFamiliesDetails as $key => $value) {
+
+//                        echo "<pre>"; print_r($seccFamiliesDetails); "<pre>"; die;
+                        ?>
+                        <tr align="center">
+                            <td><?php echo $SlNo; ?></td>
+                            <td><?php echo $value['rationcard_no'];?></td>
+                            <td><?php echo $value['name']; ?></td>
+                            <td><?php echo $value['fathername']; ?></td>
+                            <td>
+                                <?php
+                                if ($currDealer == '') {
+                                    echo 'NA';
+                                } else {
+                                    echo $currDealer;
+                                }
+                                ?>
+                            </td>
+                            <td>
+                                <?php
+                                if ($value['dealer_id'] == '') {
+                                    echo 'NA';
+                                } else {
+                                    echo $value['dealer_id'];
+                                }
+                                ?>
+                            </td>
+                            <td>
+                                <?php echo $this->Form->create('mobApproval', ['url' => ['controller' => 'SeccCardholders', 'action' => 'approveDetails']]); ?>
+                                <?php echo $this->Form->hidden('id', ['value' => $secc_cardholder_id]); ?>
+                                <?php echo $this->Form->hidden('rationCardNo', ['value' => $value['rationcard_no']]); ?>
+                                <?php echo $this->Form->hidden('dealer', ['value' => $value['dealer_id']]); ?>
+                                <?php echo $this->Form->hidden('activityFlag', ['id'=>'activityFlag']); ?>
+                                <button type="submit" class="btn btn-outline-success verify" <?php echo $value['id']; ?> > Verify </button>
+
+                                <!-- Trigger the modal with a button -->
+                                <button type="button" class="btn btn-outline-danger reject" data-toggle="modal"
+                                        data-target="#myModal">Reject
+                                </button>
+                                <!-- Modal -->
+                                <div id="myModal" class="modal fade" role="dialog">
+                                    <div class="modal-dialog">
+                                        <!-- Modal content-->
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                <button type="button" class="close" data-dismiss="modal">&times;
+                                                </button>
+                                                <h4 class="modal-title">Rejection Reason</h4>
+                                            </div>
+                                            <div class="modal-body">
+                                                <?php echo $this->Form->control('rejectReason', ['label' => '', 'class' => 'form-control txtOnly', 'placeholder' => 'Enter Reason For Rejection']); ?>
+                                            </div>
+                                            <div class="modal-footer">
+                                                <button type="button" class="btn btn-default" data-dismiss="modal"> Close </button>
+                                                <button type="submit" class="btn btn-outline-danger" <?php echo $value['id']; ?> > Submit </button>
+                                            </div>
+                                        </div>
+
+                                    </div>
+                                </div>
+                                <?php echo $this->Form->end(); ?>
+                            </td>
+                        </tr>
+                        <?php
+                        $SlNo++;
+                    }
+                } else {
+                    ?>
+                    <tr>
+                        <td colspan="5">Sorry ! No Records Found.</td>
+                    </tr>
+                <?php }
+                //                <?php } ?>
+            </table>
+        </div>
+        <!--        </fieldset>-->
+    </div>
+
+<?php }
+// todo: cardtype change=============================================================
+elseif ($activityTypeId == 5) { ?>
+
+    <table class="table table-hover">
+        <tbody>
+        <tr>
+            <td scope="col"><b>RationCard No :</b></td>
+            <td>
+                <?php
+                if ($nfsaRationcardsDetaild[0]['rationcard_no'] == '') {
+                    echo "NA";
+                } else {
+                    echo $nfsaRationcardsDetaild[0]['rationcard_no'];
+                }
+                ?>
+            </td>
+            <td scope="col"><b>Name :</b></td>
+            <td>
+                <?php
+                if ($nfsaRationcardsDetaild[0]['name'] == '') {
+                    echo "NA";
+                } else {
+                    echo $nfsaRationcardsDetaild[0]['name'];
+                }
+                ?>
+            </td>
+        </tr>
+        <tr>
+            <td scope="col"><b>Father Name :</b></td>
+            <td>
+                <?php
+                if ($nfsaRationcardsDetaild[0]['fathername'] == '') {
+                    echo "NA";
+                } else {
+                    echo $nfsaRationcardsDetaild[0]['fathername'];
+                }
+                ?>
+            </td>
+            <td scope="col"><b>Mother Name :</b></td>
+            <td>
+                <?php
+                if ($nfsaRationcardsDetaild[0]['mothername'] == '') {
+                    echo "NA";
+                } else {
+                    echo $nfsaRationcardsDetaild[0]['mothername'];
+                }
+                ?>
+            </td>
+        </tr>
+        <tr>
+            <td scope="col"><b>Card Type :</b></td>
+            <td>
+                <?php
+                if ($nfsaRationcardsDetaild[0]['cardtype_id'] == '') {
+                    echo "NA";
+                } else {
+                    echo $nfsaRationcardsDetaild[0]['cardtype_id'];
+                }
+                ?>
+            </td>
+            <td scope="col"><b>District Name :</b></td>
+            <td>
+                <?php
+                if ($nfsaRationcardsDetaild[0]['rgi_district_code'] == '') {
+                    echo "NA";
+                } else {
+                    echo $nfsaRationcardsDetaild[0]['rgi_district_code'];
+                }
+                ?>
+            </td>
+        </tr>
+        <tr>
+            <td scope="col"><b>Block Name :</b></td>
+            <td>
+                <?php
+                if ($nfsaRationcardsDetaild[0]['rgi_block_code'] == '') {
+                    echo "NA";
+                } else {
+                    echo $nfsaRationcardsDetaild[0]['rgi_block_code'];
+                }
+                ?>
+            </td>
+            <td scope="col"><b>Village Name :</b></td>
+            <td>
+                <?php
+                if ($nfsaRationcardsDetaild[0]['rgi_village_code'] == '') {
+                    echo "NA";
+                } else {
+                    echo $nfsaRationcardsDetaild[0]['rgi_village_code'];
+                }
+                ?>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+    </div>
+    </fieldset>
+    </div>
+    <!-- Family Details-->
+    <div class="container-fluid table ">
+        <div class="card-header bg-primary text-white">Family Details</div>
+        <!--        <fieldset>-->
+        <!--            <legend>--><? //= __('Family Details:') ?><!--</legend>-->
+        <div class="row">
+            <table class="table table-bordered">
+                <tbody class="headClr">
+                <tr align="center">
+                    <td>#</td>
+                    <td>Ration Card No</td>
+                    <td>Name</td>
+                    <td>Father Name</td>
+                    <td>Existing Card Type</td>
+                    <td>Applied Card Type</td>
+                    <td>Action</td>
+                </tr>
+                </tbody>
+                <?php
+                if (!empty($seccFamiliesDetails)) {
+                    $SlNo = 1;
+                    foreach ($seccFamiliesDetails as $key => $value) {
+
+//                        echo "<pre>"; print_r($seccFamiliesDetails); "<pre>"; die;
+                        ?>
+                        <tr align="center">
+                            <td><?php echo $SlNo; ?></td>
+                            <td><?php echo $value['rationcard_no'];?></td>
+                            <td><?php echo $value['name']; ?></td>
+                            <td><?php echo $value['fathername']; ?></td>
+                            <td>
+                                <?php
+                                if ($currCard == '') {
+                                    echo 'NA';
+                                } else {
+                                    echo $currCard;
+                                }
+                                ?>
+                            </td>
+                            <td>
+                                <?php
+                                if ($value['cardtype_id'] == '') {
+                                    echo 'NA';
+                                } else {
+                                    echo $value['cardtype_id'];
+                                }
+                                ?>
+                            </td>
+                            <td>
+                                <?php echo $this->Form->create('mobApproval', ['url' => ['controller' => 'SeccCardholders', 'action' => 'approveDetails']]); ?>
+                                <?php echo $this->Form->hidden('id', ['value' => $secc_cardholder_id]); ?>
+                                <?php echo $this->Form->hidden('rationCardNo', ['value' => $value['rationcard_no']]); ?>
+                                <?php echo $this->Form->hidden('cardType', ['value' => $value['cardtype_id']]); ?>
+                                <?php echo $this->Form->hidden('activityFlag', ['id'=>'activityFlag']); ?>
+                                <button type="submit" class="btn btn-outline-success verify" <?php echo $value['id']; ?> > Verify </button>
+
+                                <!-- Trigger the modal with a button -->
+                                <button type="button" class="btn btn-outline-danger reject" data-toggle="modal"
+                                        data-target="#myModal">Reject
+                                </button>
+                                <!-- Modal -->
+                                <div id="myModal" class="modal fade" role="dialog">
+                                    <div class="modal-dialog">
+                                        <!-- Modal content-->
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                <button type="button" class="close" data-dismiss="modal">&times;
+                                                </button>
+                                                <h4 class="modal-title">Rejection Reason</h4>
+                                            </div>
+                                            <div class="modal-body">
+                                                <?php echo $this->Form->control('rejectReason', ['label' => '', 'class' => 'form-control txtOnly', 'placeholder' => 'Enter Reason For Rejection']); ?>
+                                            </div>
+                                            <div class="modal-footer">
+                                                <button type="button" class="btn btn-default" data-dismiss="modal"> Close </button>
+                                                <button type="submit" class="btn btn-outline-danger" <?php echo $value['id']; ?> > Submit </button>
+                                            </div>
+                                        </div>
+
+                                    </div>
+                                </div>
+                                <?php echo $this->Form->end(); ?>
+                            </td>
+                        </tr>
+                        <?php
+                        $SlNo++;
+                    }
+                } else {
+                    ?>
+                    <tr>
+                        <td colspan="5">Sorry ! No Records Found.</td>
+                    </tr>
+                <?php }
+                //                <?php } ?>
+            </table>
+        </div>
+        <!--        </fieldset>-->
+    </div>
+
+<?php }
+// todo: mobile change===============================================================
+elseif ($activityTypeId == 6) { ?>
+    <table class="table table-hover">
+        <tbody>
+        <tr>
+            <td scope="col"><b>RationCard No :</b></td>
+            <td>
+                <?php
+                $hofData = array_keys($family_head_data);
+                $hofId = $hofData[0];
+                if ($family_head_data[$hofId] == '') {
+                    echo "NA";
+                } else {
+                    echo $family_head_data[$hofId]['rationcard_no'];
+                }
+                ?>
+            </td>
+            <td scope="col"><b>Name :</b></td>
+            <td>
+                <?php
+                if ($family_head_data[$hofId]['name'] == '') {
+                    echo "NA";
+                } else {
+                    echo $family_head_data[$hofId]['name'];
+                }
+                ?>
+            </td>
+        </tr>
+        <tr>
+            <td scope="col"><b>Father Name :</b></td>
+            <td>
+                <?php
+                if ($family_head_data[$hofId]['fathername'] == '') {
+                    echo "NA";
+                } else {
+                    echo $family_head_data[$hofId]['fathername'];
+                }
+                ?>
+            </td>
+            <td scope="col"><b>Mother Name :</b></td>
+            <td>
+                <?php
+                if ($family_head_data[$hofId]['mothername'] == '') {
+                    echo "NA";
+                } else {
+                    echo $family_head_data[$hofId]['mothername'];
+                }
+                ?>
+            </td>
+        </tr>
+        <tr>
+            <td scope="col"><b>Card Type :</b></td>
+            <td>
+                <?php
+                if ($family_head_data[$hofId]['cardtype_id'] == '') {
+                    echo "NA";
+                } else {
+                    echo $family_head_data[$hofId]['cardtype_id'];
+                }
+                ?>
+            </td>
+            <td scope="col"><b>District Name :</b></td>
+            <td>
+                <?php
+                if ($family_head_data[$hofId]['rgi_district_code'] == '') {
+                    echo "NA";
+                } else {
+                    echo $family_head_data[$hofId]['rgi_district_code'];
+                }
+                ?>
+            </td>
+        </tr>
+        <tr>
+            <td scope="col"><b>Block Name :</b></td>
+            <td>
+                <?php
+                if ($family_head_data[$hofId]['rgi_block_code'] == '') {
+                    echo "NA";
+                } else {
+                    echo $family_head_data[$hofId]['rgi_block_code'];
+                }
+                ?>
+            </td>
+            <td scope="col"><b>Village Name :</b></td>
+            <td>
+                <?php
+                if ($family_head_data[$hofId]['rgi_village_code'] == '') {
+                    echo "NA";
+                } else {
+                    echo $family_head_data[$hofId]['rgi_village_code'];
+                }
+                ?>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+    </div>
+    </fieldset>
+    </div>
+    <!-- Family Details-->
+    <div class="container-fluid table ">
+        <div class="card-header bg-primary text-white">Family Details</div>
+        <!--        <fieldset>-->
+        <!--            <legend>--><? //= __('Family Details:') ?><!--</legend>-->
+        <div class="row">
+            <table class="table table-bordered">
+                <tbody class="headClr">
+                <tr align="center">
+                    <td>#</td>
+                    <td>Ration Card No</td>
                     <td>Name</td>
                     <td>Father Name</td>
                     <td>Existing Mobile No</td>
@@ -400,20 +1175,19 @@ elseif ($activityTypeId == 6) { ?>
                 if (!empty($seccFamiliesDetails)) {
                     $SlNo = 1;
                     foreach ($seccFamiliesDetails as $key => $value) {
-
+//                        echo $secc_family_id;
 //                        echo "<pre>"; print_r($seccFamiliesDetails); "<pre>"; die;
                         ?>
                         <tr align="center">
                             <td><?php echo $SlNo; ?></td>
-                            <!--                            <td>-->
-                            <?php //echo $value['rationcard_no'];?><!--</td>-->
+                            <td><?php echo $value['rationcard_no'];?></td>
                             <td><?php echo $value['name']; ?></td>
                             <td><?php echo $value['fathername']; ?></td>
                             <td><?php echo $currMobile; ?></td>
                             <td><?php echo $value['mobile']; ?></td>
                             <td>
                                 <?php echo $this->Form->create('mobApproval', ['url' => ['controller' => 'SeccCardholders', 'action' => 'approveDetails']]); ?>
-                                <?php echo $this->Form->hidden('id', ['value' => $value['id']]); ?>
+                                <?php echo $this->Form->hidden('id', ['value' => $secc_family_id]); ?>
                                 <?php echo $this->Form->hidden('rationCardNo', ['value' => $value['rationcard_no']]); ?>
                                 <?php echo $this->Form->hidden('mobile', ['value' => $value['mobile']]); ?>
                                 <?php echo $this->Form->hidden('activityFlag', ['id'=>'activityFlag']); ?>
@@ -462,7 +1236,945 @@ elseif ($activityTypeId == 6) { ?>
         <!--        </fieldset>-->
     </div>
 
-<?php } ?>
+<?php }
+// todo: Account Number Change===============================================================
+elseif ($activityTypeId == 7) { ?>
+    <table class="table table-hover">
+        <tbody>
+        <tr>
+            <td scope="col"><b>RationCard No :</b></td>
+            <td>
+                <?php
+                if ($nfsaRationcardsDetaild[0]['rationcard_no'] == '') {
+                    echo "NA";
+                } else {
+                    echo $nfsaRationcardsDetaild[0]['rationcard_no'];
+                }
+                ?>
+            </td>
+            <td scope="col"><b>Name :</b></td>
+            <td>
+                <?php
+                if ($nfsaRationcardsDetaild[0]['name'] == '') {
+                    echo "NA";
+                } else {
+                    echo $nfsaRationcardsDetaild[0]['name'];
+                }
+                ?>
+            </td>
+        </tr>
+        <tr>
+            <td scope="col"><b>Father Name :</b></td>
+            <td>
+                <?php
+                if ($nfsaRationcardsDetaild[0]['fathername'] == '') {
+                    echo "NA";
+                } else {
+                    echo $nfsaRationcardsDetaild[0]['fathername'];
+                }
+                ?>
+            </td>
+            <td scope="col"><b>Mother Name :</b></td>
+            <td>
+                <?php
+                if ($nfsaRationcardsDetaild[0]['mothername'] == '') {
+                    echo "NA";
+                } else {
+                    echo $nfsaRationcardsDetaild[0]['mothername'];
+                }
+                ?>
+            </td>
+        </tr>
+        <tr>
+            <td scope="col"><b>Card Type :</b></td>
+            <td>
+                <?php
+                if ($nfsaRationcardsDetaild[0]['cardtype_id'] == '') {
+                    echo "NA";
+                } else {
+                    echo $nfsaRationcardsDetaild[0]['cardtype_id'];
+                }
+                ?>
+            </td>
+            <td scope="col"><b>District Name :</b></td>
+            <td>
+                <?php
+                if ($nfsaRationcardsDetaild[0]['rgi_district_code'] == '') {
+                    echo "NA";
+                } else {
+                    echo $nfsaRationcardsDetaild[0]['rgi_district_code'];
+                }
+                ?>
+            </td>
+        </tr>
+        <tr>
+            <td scope="col"><b>Block Name :</b></td>
+            <td>
+                <?php
+                if ($nfsaRationcardsDetaild[0]['rgi_block_code'] == '') {
+                    echo "NA";
+                } else {
+                    echo $nfsaRationcardsDetaild[0]['rgi_block_code'];
+                }
+                ?>
+            </td>
+            <td scope="col"><b>Village Name :</b></td>
+            <td>
+                <?php
+                if ($nfsaRationcardsDetaild[0]['rgi_village_code'] == '') {
+                    echo "NA";
+                } else {
+                    echo $nfsaRationcardsDetaild[0]['rgi_village_code'];
+                }
+                ?>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+    </div>
+    </fieldset>
+    </div>
+    <!-- Family Details-->
+    <div class="container-fluid table ">
+        <div class="card-header bg-primary text-white">Family Details</div>
+        <!--        <fieldset>-->
+        <!--            <legend>--><? //= __('Family Details:') ?><!--</legend>-->
+        <div class="row">
+            <table class="table table-bordered">
+                <tbody class="headClr">
+                <tr align="center">
+                    <td>#</td>
+                    <td>Ration Card No</td>
+                    <td>Name</td>
+                    <td>Father Name</td>
+                    <td>Existing Account No</td>
+                    <td>Applied Account No</td>
+                    <td>Action</td>
+                </tr>
+                </tbody>
+                <?php
+                if (!empty($seccFamiliesDetails)) {
+                    $SlNo = 1;
+                    foreach ($seccFamiliesDetails as $key => $value) {
+
+//                        echo "<pre>"; print_r($seccFamiliesDetails); "<pre>"; die;
+                        ?>
+                        <tr align="center">
+                            <td><?php echo $SlNo; ?></td>
+                            <td><?php echo $value['rationcard_no'];?></td>
+                            <td><?php echo $value['name']; ?></td>
+                            <td><?php echo $value['fathername']; ?></td>
+                            <td>
+                                <?php
+                                if ($currAccount == '') {
+                                    echo 'NA';
+                                } else {
+                                    echo $currAccount;
+                                }
+                                ?>
+                            </td>
+                            <td>
+                                <?php
+                                if ($currAccount == '') {
+                                    echo 'NA';
+                                } else {
+                                    echo $value['bank_account_no'];
+                                }
+                                ?>
+                            </td>
+                            <td>
+                                <?php echo $this->Form->create('mobApproval', ['url' => ['controller' => 'SeccCardholders', 'action' => 'approveDetails']]); ?>
+                                <?php echo $this->Form->hidden('id', ['value' => $secc_cardholder_id]); ?>
+                                <?php echo $this->Form->hidden('rationCardNo', ['value' => $value['rationcard_no']]); ?>
+                                <?php echo $this->Form->hidden('bnkMasterId', ['value' => $value['bank_master_id']]); ?>
+                                <?php echo $this->Form->hidden('bnkAcntNo', ['value' => $value['bank_account_no']]); ?>
+                                <?php echo $this->Form->hidden('activityFlag', ['id'=>'activityFlag']); ?>
+                                <button type="submit" class="btn btn-outline-success verify" <?php echo $value['id']; ?> > Verify </button>
+
+                                <!-- Trigger the modal with a button -->
+                                <button type="button" class="btn btn-outline-danger reject" data-toggle="modal"
+                                        data-target="#myModal">Reject
+                                </button>
+                                <!-- Modal -->
+                                <div id="myModal" class="modal fade" role="dialog">
+                                    <div class="modal-dialog">
+                                        <!-- Modal content-->
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                <button type="button" class="close" data-dismiss="modal">&times;
+                                                </button>
+                                                <h4 class="modal-title">Rejection Reason</h4>
+                                            </div>
+                                            <div class="modal-body">
+                                                <?php echo $this->Form->control('rejectReason', ['label' => '', 'class' => 'form-control txtOnly', 'placeholder' => 'Enter Reason For Rejection']); ?>
+                                            </div>
+                                            <div class="modal-footer">
+                                                <button type="button" class="btn btn-default" data-dismiss="modal"> Close </button>
+                                                <button type="submit" class="btn btn-outline-danger" <?php echo $value['id']; ?> > Submit </button>
+                                            </div>
+                                        </div>
+
+                                    </div>
+                                </div>
+                                <?php echo $this->Form->end(); ?>
+                            </td>
+                        </tr>
+                        <?php
+                        $SlNo++;
+                    }
+                } else {
+                    ?>
+                    <tr>
+                        <td colspan="5">Sorry ! No Records Found.</td>
+                    </tr>
+                <?php }
+                //                <?php } ?>
+            </table>
+        </div>
+        <!--        </fieldset>-->
+    </div>
+
+<?php }
+// todo: Uid Change===========================================================
+elseif ($activityTypeId == 8) { ?>
+    <table class="table table-hover">
+        <tbody>
+        <tr>
+            <td scope="col"><b>RationCard No :</b></td>
+            <td>
+                <?php
+                $hofData = array_keys($family_head_data);
+                $hofId = $hofData[0];
+                if ($family_head_data[$hofId] == '') {
+                    echo "NA";
+                } else {
+                    echo $family_head_data[$hofId]['rationcard_no'];
+                }
+                ?>
+            </td>
+            <td scope="col"><b>Name :</b></td>
+            <td>
+                <?php
+                if ($family_head_data[$hofId]['name'] == '') {
+                    echo "NA";
+                } else {
+                    echo $family_head_data[$hofId]['name'];
+                }
+                ?>
+            </td>
+        </tr>
+        <tr>
+            <td scope="col"><b>Father Name :</b></td>
+            <td>
+                <?php
+                if ($family_head_data[$hofId]['fathername'] == '') {
+                    echo "NA";
+                } else {
+                    echo $family_head_data[$hofId]['fathername'];
+                }
+                ?>
+            </td>
+            <td scope="col"><b>Mother Name :</b></td>
+            <td>
+                <?php
+                if ($family_head_data[$hofId]['mothername'] == '') {
+                    echo "NA";
+                } else {
+                    echo $family_head_data[$hofId]['mothername'];
+                }
+                ?>
+            </td>
+        </tr>
+        <tr>
+            <td scope="col"><b>Card Type :</b></td>
+            <td>
+                <?php
+                if ($family_head_data[$hofId]['cardtype_id'] == '') {
+                    echo "NA";
+                } else {
+                    echo $family_head_data[$hofId]['cardtype_id'];
+                }
+                ?>
+            </td>
+            <td scope="col"><b>District Name :</b></td>
+            <td>
+                <?php
+                if ($family_head_data[$hofId]['rgi_district_code'] == '') {
+                    echo "NA";
+                } else {
+                    echo $family_head_data[$hofId]['rgi_district_code'];
+                }
+                ?>
+            </td>
+        </tr>
+        <tr>
+            <td scope="col"><b>Block Name :</b></td>
+            <td>
+                <?php
+                if ($family_head_data[$hofId]['rgi_block_code'] == '') {
+                    echo "NA";
+                } else {
+                    echo $family_head_data[$hofId]['rgi_block_code'];
+                }
+                ?>
+            </td>
+            <td scope="col"><b>Village Name :</b></td>
+            <td>
+                <?php
+                if ($family_head_data[$hofId]['rgi_village_code'] == '') {
+                    echo "NA";
+                } else {
+                    echo $family_head_data[$hofId]['rgi_village_code'];
+                }
+                ?>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+    </div>
+    </fieldset>
+    </div>
+    <!-- Family Details-->
+    <div class="container-fluid table ">
+        <div class="card-header bg-primary text-white">Family Details</div>
+        <!--        <fieldset>-->
+        <!--            <legend>--><? //= __('Family Details:') ?><!--</legend>-->
+        <div class="row">
+            <table class="table table-bordered">
+                <tbody class="headClr">
+                <tr align="center">
+                    <td>#</td>
+                    <td>Ration Card No</td>
+                    <td>Name</td>
+                    <td>Father Name</td>
+                    <td>Existing Address</td>
+                    <td>Applied Address</td>
+                    <td>Action</td>
+
+                </tr>
+                </tbody>
+                <?php
+                if (!empty($seccFamiliesDetails)) {
+                    $SlNo = 1;
+                    foreach ($seccFamiliesDetails as $key => $value) {
+//                        echo $secc_family_id;
+//                        echo "<pre>"; print_r($seccFamiliesDetails); "<pre>"; die;
+                        ?>
+                        <tr align="center">
+                            <td><?php echo $SlNo; ?></td>
+                            <td><?php echo $value['rationcard_no'];?></td>
+                            <td><?php echo $value['name']; ?></td>
+                            <td><?php echo $value['fathername']; ?></td>
+                            <td><?php echo $currMobile; ?></td>
+                            <td><?php echo $value['mobile']; ?></td>
+                            <td>
+                                <?php echo $this->Form->create('mobApproval', ['url' => ['controller' => 'SeccCardholders', 'action' => 'approveDetails']]); ?>
+                                <?php echo $this->Form->hidden('id', ['value' => $secc_family_id]); ?>
+                                <?php echo $this->Form->hidden('rationCardNo', ['value' => $value['rationcard_no']]); ?>
+                                <?php echo $this->Form->hidden('mobile', ['value' => $value['mobile']]); ?>
+                                <?php echo $this->Form->hidden('activityFlag', ['id'=>'activityFlag']); ?>
+                                <button type="submit" class="btn btn-outline-success verify" <?php echo $value['id']; ?> > Verify </button>
+
+                                <!-- Trigger the modal with a button -->
+                                <button type="button" class="btn btn-outline-danger reject" data-toggle="modal"
+                                        data-target="#myModal">Reject
+                                </button>
+                                <!-- Modal -->
+                                <div id="myModal" class="modal fade" role="dialog">
+                                    <div class="modal-dialog">
+                                        <!-- Modal content-->
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                <button type="button" class="close" data-dismiss="modal">&times;
+                                                </button>
+                                                <h4 class="modal-title">Rejection Reason</h4>
+                                            </div>
+                                            <div class="modal-body">
+                                                <?php echo $this->Form->control('rejectReason', ['label' => '', 'class' => 'form-control txtOnly', 'placeholder' => 'Enter Reason For Rejection']); ?>
+                                            </div>
+                                            <div class="modal-footer">
+                                                <button type="button" class="btn btn-default" data-dismiss="modal"> Close </button>
+                                                <button type="submit" class="btn btn-outline-danger" <?php echo $value['id']; ?> > Submit </button>
+                                            </div>
+                                        </div>
+
+                                    </div>
+                                </div>
+                                <?php echo $this->Form->end(); ?>
+                            </td>
+                        </tr>
+                        <?php
+                        $SlNo++;
+                    }
+                } else {
+                    ?>
+                    <tr>
+                        <td colspan="5">Sorry ! No Records Found.</td>
+                    </tr>
+                <?php }
+                //                <?php } ?>
+            </table>
+        </div>
+        <!--        </fieldset>-->
+    </div>
+
+<?php }
+// todo: delete=====================================================================
+elseif ($activityTypeId == 9) { ?>
+    <table class="table table-hover">
+        <tbody>
+        <tr>
+            <td scope="col"><b>RationCard No :</b></td>
+            <td>
+                <?php
+                $hofData = array_keys($family_head_data);
+                $hofId = $hofData[0];
+                if ($family_head_data[$hofId] == '') {
+                    echo "NA";
+                } else {
+                    echo $family_head_data[$hofId]['rationcard_no'];
+                }
+                ?>
+            </td>
+            <td scope="col"><b>Name :</b></td>
+            <td>
+                <?php
+                if ($family_head_data[$hofId]['name'] == '') {
+                    echo "NA";
+                } else {
+                    echo $family_head_data[$hofId]['name'];
+                }
+                ?>
+            </td>
+        </tr>
+        <tr>
+            <td scope="col"><b>Father Name :</b></td>
+            <td>
+                <?php
+                if ($family_head_data[$hofId]['fathername'] == '') {
+                    echo "NA";
+                } else {
+                    echo $family_head_data[$hofId]['fathername'];
+                }
+                ?>
+            </td>
+            <td scope="col"><b>Mother Name :</b></td>
+            <td>
+                <?php
+                if ($family_head_data[$hofId]['mothername'] == '') {
+                    echo "NA";
+                } else {
+                    echo $family_head_data[$hofId]['mothername'];
+                }
+                ?>
+            </td>
+        </tr>
+        <tr>
+            <td scope="col"><b>Card Type :</b></td>
+            <td>
+                <?php
+                if ($family_head_data[$hofId]['cardtype_id'] == '') {
+                    echo "NA";
+                } else {
+                    echo $family_head_data[$hofId]['cardtype_id'];
+                }
+                ?>
+            </td>
+            <td scope="col"><b>District Name :</b></td>
+            <td>
+                <?php
+                if ($family_head_data[$hofId]['rgi_district_code'] == '') {
+                    echo "NA";
+                } else {
+                    echo $family_head_data[$hofId]['rgi_district_code'];
+                }
+                ?>
+            </td>
+        </tr>
+        <tr>
+            <td scope="col"><b>Block Name :</b></td>
+            <td>
+                <?php
+                if ($family_head_data[$hofId]['rgi_block_code'] == '') {
+                    echo "NA";
+                } else {
+                    echo $family_head_data[$hofId]['rgi_block_code'];
+                }
+                ?>
+            </td>
+            <td scope="col"><b>Village Name :</b></td>
+            <td>
+                <?php
+                if ($family_head_data[$hofId]['rgi_village_code'] == '') {
+                    echo "NA";
+                } else {
+                    echo $family_head_data[$hofId]['rgi_village_code'];
+                }
+                ?>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+    </div>
+    </fieldset>
+    </div>
+    <!-- Family Details-->
+    <div class="container-fluid table ">
+        <div class="card-header bg-primary text-white">Family Details</div>
+        <!--        <fieldset>-->
+        <!--            <legend>--><? //= __('Family Details:') ?><!--</legend>-->
+        <div class="row">
+            <table class="table table-bordered">
+                <tbody class="headClr">
+                <tr align="center">
+                    <td>#</td>
+                    <td>Ration Card No</td>
+                    <td>Name</td>
+                    <td>Father Name</td>
+                    <td>Existing Address</td>
+                    <td>Applied Address</td>
+                    <td>Action</td>
+
+                </tr>
+                </tbody>
+                <?php
+                if (!empty($seccFamiliesDetails)) {
+                    $SlNo = 1;
+                    foreach ($seccFamiliesDetails as $key => $value) {
+//                        echo $secc_family_id;
+//                        echo "<pre>"; print_r($seccFamiliesDetails); "<pre>"; die;
+                        ?>
+                        <tr align="center">
+                            <td><?php echo $SlNo; ?></td>
+                            <td><?php echo $value['rationcard_no'];?></td>
+                            <td><?php echo $value['name']; ?></td>
+                            <td><?php echo $value['fathername']; ?></td>
+                            <td><?php echo $currMobile; ?></td>
+                            <td><?php echo $value['mobile']; ?></td>
+                            <td>
+                                <?php echo $this->Form->create('mobApproval', ['url' => ['controller' => 'SeccCardholders', 'action' => 'approveDetails']]); ?>
+                                <?php echo $this->Form->hidden('id', ['value' => $secc_family_id]); ?>
+                                <?php echo $this->Form->hidden('rationCardNo', ['value' => $value['rationcard_no']]); ?>
+                                <?php echo $this->Form->hidden('mobile', ['value' => $value['mobile']]); ?>
+                                <?php echo $this->Form->hidden('activityFlag', ['id'=>'activityFlag']); ?>
+                                <button type="submit" class="btn btn-outline-success verify" <?php echo $value['id']; ?> > Verify </button>
+
+                                <!-- Trigger the modal with a button -->
+                                <button type="button" class="btn btn-outline-danger reject" data-toggle="modal"
+                                        data-target="#myModal">Reject
+                                </button>
+                                <!-- Modal -->
+                                <div id="myModal" class="modal fade" role="dialog">
+                                    <div class="modal-dialog">
+                                        <!-- Modal content-->
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                <button type="button" class="close" data-dismiss="modal">&times;
+                                                </button>
+                                                <h4 class="modal-title">Rejection Reason</h4>
+                                            </div>
+                                            <div class="modal-body">
+                                                <?php echo $this->Form->control('rejectReason', ['label' => '', 'class' => 'form-control txtOnly', 'placeholder' => 'Enter Reason For Rejection']); ?>
+                                            </div>
+                                            <div class="modal-footer">
+                                                <button type="button" class="btn btn-default" data-dismiss="modal"> Close </button>
+                                                <button type="submit" class="btn btn-outline-danger" <?php echo $value['id']; ?> > Submit </button>
+                                            </div>
+                                        </div>
+
+                                    </div>
+                                </div>
+                                <?php echo $this->Form->end(); ?>
+                            </td>
+                        </tr>
+                        <?php
+                        $SlNo++;
+                    }
+                } else {
+                    ?>
+                    <tr>
+                        <td colspan="5">Sorry ! No Records Found.</td>
+                    </tr>
+                <?php }
+                //                <?php } ?>
+            </table>
+        </div>
+        <!--        </fieldset>-->
+    </div>
+
+<?php }
+// Name Change=================================================================
+elseif ($activityTypeId == 10) { ?>
+    <table class="table table-hover">
+        <tbody>
+        <tr>
+            <td scope="col"><b>RationCard No :</b></td>
+            <td>
+                <?php
+                $hofData = array_keys($family_head_data);
+                $hofId = $hofData[0];
+                if ($family_head_data[$hofId] == '') {
+                    echo "NA";
+                } else {
+                    echo $family_head_data[$hofId]['rationcard_no'];
+                }
+                ?>
+            </td>
+            <td scope="col"><b>Name :</b></td>
+            <td>
+                <?php
+                if ($family_head_data[$hofId]['name'] == '') {
+                    echo "NA";
+                } else {
+                    echo $family_head_data[$hofId]['name'];
+                }
+                ?>
+            </td>
+        </tr>
+        <tr>
+            <td scope="col"><b>Father Name :</b></td>
+            <td>
+                <?php
+                if ($family_head_data[$hofId]['fathername'] == '') {
+                    echo "NA";
+                } else {
+                    echo $family_head_data[$hofId]['fathername'];
+                }
+                ?>
+            </td>
+            <td scope="col"><b>Mother Name :</b></td>
+            <td>
+                <?php
+                if ($family_head_data[$hofId]['mothername'] == '') {
+                    echo "NA";
+                } else {
+                    echo $family_head_data[$hofId]['mothername'];
+                }
+                ?>
+            </td>
+        </tr>
+        <tr>
+            <td scope="col"><b>Card Type :</b></td>
+            <td>
+                <?php
+                if ($family_head_data[$hofId]['cardtype_id'] == '') {
+                    echo "NA";
+                } else {
+                    echo $family_head_data[$hofId]['cardtype_id'];
+                }
+                ?>
+            </td>
+            <td scope="col"><b>District Name :</b></td>
+            <td>
+                <?php
+                if ($family_head_data[$hofId]['rgi_district_code'] == '') {
+                    echo "NA";
+                } else {
+                    echo $family_head_data[$hofId]['rgi_district_code'];
+                }
+                ?>
+            </td>
+        </tr>
+        <tr>
+            <td scope="col"><b>Block Name :</b></td>
+            <td>
+                <?php
+                if ($family_head_data[$hofId]['rgi_block_code'] == '') {
+                    echo "NA";
+                } else {
+                    echo $family_head_data[$hofId]['rgi_block_code'];
+                }
+                ?>
+            </td>
+            <td scope="col"><b>Village Name :</b></td>
+            <td>
+                <?php
+                if ($family_head_data[$hofId]['rgi_village_code'] == '') {
+                    echo "NA";
+                } else {
+                    echo $family_head_data[$hofId]['rgi_village_code'];
+                }
+                ?>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+    </div>
+    </fieldset>
+    </div>
+    <!-- Family Details-->
+    <div class="container-fluid table ">
+        <div class="card-header bg-primary text-white">Family Details</div>
+        <!--        <fieldset>-->
+        <!--            <legend>--><? //= __('Family Details:') ?><!--</legend>-->
+        <div class="row">
+            <table class="table table-bordered">
+                <tbody class="headClr">
+                <tr align="center">
+                    <td>#</td>
+                    <td>Ration Card No</td>
+                    <td>Name</td>
+                    <td>Father Name</td>
+                    <td>Existing Address</td>
+                    <td>Applied Address</td>
+                    <td>Action</td>
+
+                </tr>
+                </tbody>
+                <?php
+                if (!empty($seccFamiliesDetails)) {
+                    $SlNo = 1;
+                    foreach ($seccFamiliesDetails as $key => $value) {
+//                        echo $secc_family_id;
+//                        echo "<pre>"; print_r($seccFamiliesDetails); "<pre>"; die;
+                        ?>
+                        <tr align="center">
+                            <td><?php echo $SlNo; ?></td>
+                            <td><?php echo $value['rationcard_no'];?></td>
+                            <td><?php echo $value['name']; ?></td>
+                            <td><?php echo $value['fathername']; ?></td>
+                            <td><?php echo $currMobile; ?></td>
+                            <td><?php echo $value['mobile']; ?></td>
+                            <td>
+                                <?php echo $this->Form->create('mobApproval', ['url' => ['controller' => 'SeccCardholders', 'action' => 'approveDetails']]); ?>
+                                <?php echo $this->Form->hidden('id', ['value' => $secc_family_id]); ?>
+                                <?php echo $this->Form->hidden('rationCardNo', ['value' => $value['rationcard_no']]); ?>
+                                <?php echo $this->Form->hidden('mobile', ['value' => $value['mobile']]); ?>
+                                <?php echo $this->Form->hidden('activityFlag', ['id'=>'activityFlag']); ?>
+                                <button type="submit" class="btn btn-outline-success verify" <?php echo $value['id']; ?> > Verify </button>
+
+                                <!-- Trigger the modal with a button -->
+                                <button type="button" class="btn btn-outline-danger reject" data-toggle="modal"
+                                        data-target="#myModal">Reject
+                                </button>
+                                <!-- Modal -->
+                                <div id="myModal" class="modal fade" role="dialog">
+                                    <div class="modal-dialog">
+                                        <!-- Modal content-->
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                <button type="button" class="close" data-dismiss="modal">&times;
+                                                </button>
+                                                <h4 class="modal-title">Rejection Reason</h4>
+                                            </div>
+                                            <div class="modal-body">
+                                                <?php echo $this->Form->control('rejectReason', ['label' => '', 'class' => 'form-control txtOnly', 'placeholder' => 'Enter Reason For Rejection']); ?>
+                                            </div>
+                                            <div class="modal-footer">
+                                                <button type="button" class="btn btn-default" data-dismiss="modal"> Close </button>
+                                                <button type="submit" class="btn btn-outline-danger" <?php echo $value['id']; ?> > Submit </button>
+                                            </div>
+                                        </div>
+
+                                    </div>
+                                </div>
+                                <?php echo $this->Form->end(); ?>
+                            </td>
+                        </tr>
+                        <?php
+                        $SlNo++;
+                    }
+                } else {
+                    ?>
+                    <tr>
+                        <td colspan="5">Sorry ! No Records Found.</td>
+                    </tr>
+                <?php }
+                //                <?php } ?>
+            </table>
+        </div>
+        <!--        </fieldset>-->
+    </div>
+
+<?php }
+// todo: Hof==================================================================================
+elseif ($activityTypeId == 11) { ?>
+    <table class="table table-hover">
+        <tbody>
+        <tr>
+            <td scope="col"><b>RationCard No :</b></td>
+            <td>
+                <?php
+                $hofData = array_keys($family_head_data);
+                $hofId = $hofData[0];
+                if ($family_head_data[$hofId] == '') {
+                    echo "NA";
+                } else {
+                    echo $family_head_data[$hofId]['rationcard_no'];
+                }
+                ?>
+            </td>
+            <td scope="col"><b>Name :</b></td>
+            <td>
+                <?php
+                if ($family_head_data[$hofId]['name'] == '') {
+                    echo "NA";
+                } else {
+                    echo $family_head_data[$hofId]['name'];
+                }
+                ?>
+            </td>
+        </tr>
+        <tr>
+            <td scope="col"><b>Father Name :</b></td>
+            <td>
+                <?php
+                if ($family_head_data[$hofId]['fathername'] == '') {
+                    echo "NA";
+                } else {
+                    echo $family_head_data[$hofId]['fathername'];
+                }
+                ?>
+            </td>
+            <td scope="col"><b>Mother Name :</b></td>
+            <td>
+                <?php
+                if ($family_head_data[$hofId]['mothername'] == '') {
+                    echo "NA";
+                } else {
+                    echo $family_head_data[$hofId]['mothername'];
+                }
+                ?>
+            </td>
+        </tr>
+        <tr>
+            <td scope="col"><b>Card Type :</b></td>
+            <td>
+                <?php
+                if ($family_head_data[$hofId]['cardtype_id'] == '') {
+                    echo "NA";
+                } else {
+                    echo $family_head_data[$hofId]['cardtype_id'];
+                }
+                ?>
+            </td>
+            <td scope="col"><b>District Name :</b></td>
+            <td>
+                <?php
+                if ($family_head_data[$hofId]['rgi_district_code'] == '') {
+                    echo "NA";
+                } else {
+                    echo $family_head_data[$hofId]['rgi_district_code'];
+                }
+                ?>
+            </td>
+        </tr>
+        <tr>
+            <td scope="col"><b>Block Name :</b></td>
+            <td>
+                <?php
+                if ($family_head_data[$hofId]['rgi_block_code'] == '') {
+                    echo "NA";
+                } else {
+                    echo $family_head_data[$hofId]['rgi_block_code'];
+                }
+                ?>
+            </td>
+            <td scope="col"><b>Village Name :</b></td>
+            <td>
+                <?php
+                if ($family_head_data[$hofId]['rgi_village_code'] == '') {
+                    echo "NA";
+                } else {
+                    echo $family_head_data[$hofId]['rgi_village_code'];
+                }
+                ?>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+    </div>
+    </fieldset>
+    </div>
+    <!-- Family Details-->
+    <div class="container-fluid table ">
+        <div class="card-header bg-primary text-white">Family Details</div>
+        <!--        <fieldset>-->
+        <!--            <legend>--><? //= __('Family Details:') ?><!--</legend>-->
+        <div class="row">
+            <table class="table table-bordered">
+                <tbody class="headClr">
+                <tr align="center">
+                    <td>#</td>
+                    <td>Ration Card No</td>
+                    <td>Name</td>
+                    <td>Father Name</td>
+                    <td>Existing Address</td>
+                    <td>Applied Address</td>
+                    <td>Action</td>
+
+                </tr>
+                </tbody>
+                <?php
+                if (!empty($seccFamiliesDetails)) {
+                    $SlNo = 1;
+                    foreach ($seccFamiliesDetails as $key => $value) {
+//                        echo $secc_family_id;
+//                        echo "<pre>"; print_r($seccFamiliesDetails); "<pre>"; die;
+                        ?>
+                        <tr align="center">
+                            <td><?php echo $SlNo; ?></td>
+                            <td><?php echo $value['rationcard_no'];?></td>
+                            <td><?php echo $value['name']; ?></td>
+                            <td><?php echo $value['fathername']; ?></td>
+                            <td><?php echo $currMobile; ?></td>
+                            <td><?php echo $value['mobile']; ?></td>
+                            <td>
+                                <?php echo $this->Form->create('mobApproval', ['url' => ['controller' => 'SeccCardholders', 'action' => 'approveDetails']]); ?>
+                                <?php echo $this->Form->hidden('id', ['value' => $secc_family_id]); ?>
+                                <?php echo $this->Form->hidden('rationCardNo', ['value' => $value['rationcard_no']]); ?>
+                                <?php echo $this->Form->hidden('mobile', ['value' => $value['mobile']]); ?>
+                                <?php echo $this->Form->hidden('activityFlag', ['id'=>'activityFlag']); ?>
+                                <button type="submit" class="btn btn-outline-success verify" <?php echo $value['id']; ?> > Verify </button>
+
+                                <!-- Trigger the modal with a button -->
+                                <button type="button" class="btn btn-outline-danger reject" data-toggle="modal"
+                                        data-target="#myModal">Reject
+                                </button>
+                                <!-- Modal -->
+                                <div id="myModal" class="modal fade" role="dialog">
+                                    <div class="modal-dialog">
+                                        <!-- Modal content-->
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                <button type="button" class="close" data-dismiss="modal">&times;
+                                                </button>
+                                                <h4 class="modal-title">Rejection Reason</h4>
+                                            </div>
+                                            <div class="modal-body">
+                                                <?php echo $this->Form->control('rejectReason', ['label' => '', 'class' => 'form-control txtOnly', 'placeholder' => 'Enter Reason For Rejection']); ?>
+                                            </div>
+                                            <div class="modal-footer">
+                                                <button type="button" class="btn btn-default" data-dismiss="modal"> Close </button>
+                                                <button type="submit" class="btn btn-outline-danger" <?php echo $value['id']; ?> > Submit </button>
+                                            </div>
+                                        </div>
+
+                                    </div>
+                                </div>
+                                <?php echo $this->Form->end(); ?>
+                            </td>
+                        </tr>
+                        <?php
+                        $SlNo++;
+                    }
+                } else {
+                    ?>
+                    <tr>
+                        <td colspan="5">Sorry ! No Records Found.</td>
+                    </tr>
+                <?php }
+                //                <?php } ?>
+            </table>
+        </div>
+        <!--        </fieldset>-->
+    </div>
+
+<?php }
+
+
+?>
+<!--?>-->
 
 
 <script type="text/javascript">
