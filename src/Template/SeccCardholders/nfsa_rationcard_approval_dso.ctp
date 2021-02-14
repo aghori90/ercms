@@ -137,7 +137,7 @@ use Cake\Routing\Router;
     <?php
     if ($this->getRequest()->is('post')) {
 //      todo: for new application=================================================================
-        if ($activity_type_id == 1) { ?>
+        if (($activity_type_id == 3) ||($activity_type_id == 4) || ($activity_type_id == 5) || ($activity_type_id == 7) || ($activity_type_id == 11)) { ?>
             <div class="card px-0 pt-4 pb-0 mt-3 mb-3" style="border:none;">
                 <div class="flashMessage">
                     <?php echo $this->Flash->render(); ?>
@@ -163,7 +163,7 @@ use Cake\Routing\Router;
                                 <td><?php echo $SlNo; ?></td>
                                 <td><?php echo $value['rationcard_no']; ?></td>
                                 <td>
-                                    <?php echo $this->Form->create('regNo', ['controller' => 'SeccCardholders', 'action' => 'nfsaRationCardDataBso']); ?>
+                                    <?php echo $this->Form->create('regNo', ['controller' => 'SeccCardholders', 'action' => 'nfsaRationCardDataDso']); ?>
                                     <?php echo $this->Form->hidden('ackNo', ['value' => $value['ack_no']]); ?>
                                     <?php echo $this->Form->hidden('rationNo', ['value' => $value['rationcard_no']]); ?>
                                     <button class="btnBx" aria-hidden="true" data-toggle="tooltip"
@@ -189,7 +189,7 @@ use Cake\Routing\Router;
             </div>
         <?php }
 //      todo: for mobile change=================================================================
-        elseif ($activity_type_id == 6) { ?>
+        elseif (($activity_type_id == 1) || ($activity_type_id == 2) || ($activity_type_id == 6) || ($activity_type_id == 8) || ($activity_type_id == 9) || ($activity_type_id == 10)) { ?>
             <div class="card px-0 pt-4 pb-0 mt-3 mb-3" style="border:none;">
                 <div class="flashMessage">
                     <?php echo $this->Flash->render(); ?>

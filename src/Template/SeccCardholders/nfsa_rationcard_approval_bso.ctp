@@ -88,16 +88,6 @@ use Cake\Routing\Router;
     <div class="container-fluid">
         <fieldset>
             <div class="row">
-                <!--For Block-->
-                <!--<div class="col-md-4 col-lg-4 col-sm-12 col-xs-12">
-                    <div class="form-group">
-                        <label for="block"><b>Block :</b></label>
-                        <?php
-/*                        echo $this->Form->hidden('', ['label' => '', 'name' => 'rgi_block_code', 'id' => 'rgi_block_code', 'class' => 'form-control', 'value' => $rgi_block_code, 'readonly' => 'readonly']);
-                        echo $this->Form->control('', ['label' => '', 'name' => 'blockName', 'id' => 'blockName', 'class' => 'form-control', 'value' => $blockName, 'readonly' => 'readonly']);
-                        */?>
-                    </div>
-                </div>-->
                 <!--For Village-->
                 <div class="col-md-3 col-lg-3 col-sm-12 col-xs-12">
                     <div class="form-group">
@@ -113,9 +103,9 @@ use Cake\Routing\Router;
                     </div>
                 </div>
                 <!--OR tag-->
-                    <div>
-                        <label for="" class="orTag"><b>OR</b></label>
-                    </div>
+                <div>
+                    <label for="" class="orTag"><b>OR</b></label>
+                </div>
                 <!--For RationCard No.-->
                 <div class="col-md-4 col-lg-4 col-sm-12 col-xs-12 fldDc">
                     <div class="form-group">
@@ -146,8 +136,8 @@ use Cake\Routing\Router;
     <?php echo $this->Form->end(); ?>
     <?php
     if ($this->getRequest()->is('post')) {
-//      todo: for new application=================================================================
-        if ($activity_type_id == 1) { ?>
+//      todo: from jsfss_secc_cardholders table================================================================
+        if (($activity_type_id == 3) ||($activity_type_id == 4) || ($activity_type_id == 5) || ($activity_type_id == 7) || ($activity_type_id == 11)) { ?>
             <div class="card px-0 pt-4 pb-0 mt-3 mb-3" style="border:none;">
                 <div class="flashMessage">
                     <?php echo $this->Flash->render(); ?>
@@ -167,7 +157,6 @@ use Cake\Routing\Router;
                     if (!empty($nfsaRationcards)) {
                         $SlNo = 1;
                         foreach ($nfsaRationcards as $key => $value) {
-                            //echo "<pre>"; print_r($value); die();
                             ?>
                             <tr>
                                 <td><?php echo $SlNo; ?></td>
@@ -181,8 +170,6 @@ use Cake\Routing\Router;
                                             title="click to view Details"><?php echo $value['ack_no']; ?></button>
                                     <?php echo $this->Form->end(); ?>
                                 </td>
-                                <!--                            <td>-->
-                                <?php //echo $value['cardtype_id']; ?><!--</td>-->
                                 <td><?php echo $value['name']; ?></td>
                                 <td><?php echo $value['fathername']; ?></td>
                             </tr>
@@ -198,8 +185,8 @@ use Cake\Routing\Router;
                 </table>
             </div>
         <?php }
-        // todo: Add family member===============================================================================
-        if ($activity_type_id == 2) { ?>
+//      todo: from jsfss_secc_families table=================================================================
+        elseif (($activity_type_id == 1) || ($activity_type_id == 2) || ($activity_type_id == 6) || ($activity_type_id == 8) || ($activity_type_id == 9) || ($activity_type_id == 10)) { ?>
             <div class="card px-0 pt-4 pb-0 mt-3 mb-3" style="border:none;">
                 <div class="flashMessage">
                     <?php echo $this->Flash->render(); ?>
@@ -219,7 +206,6 @@ use Cake\Routing\Router;
                     if (!empty($nfsaRationcards)) {
                         $SlNo = 1;
                         foreach ($nfsaRationcards as $key => $value) {
-                            //echo "<pre>"; print_r($value); die();
                             ?>
                             <tr>
                                 <td><?php echo $SlNo; ?></td>
@@ -233,471 +219,6 @@ use Cake\Routing\Router;
                                             title="click to view Details"><?php echo $value['ack_no_ercms']; ?></button>
                                     <?php echo $this->Form->end(); ?>
                                 </td>
-                                <!--                            <td>-->
-                                <?php //echo $value['cardtype_id']; ?><!--</td>-->
-                                <td><?php echo $value['name']; ?></td>
-                                <td><?php echo $value['fathername']; ?></td>
-                            </tr>
-                            <?php
-                            $SlNo++;
-                        }
-                    } else { ?>
-                        <tr>
-                            <td colspan="6">Sorry ! No Records Found.</td>
-                        </tr>
-                    <?php } ?>
-                    </tbody>
-                </table>
-            </div>
-        <?php }
-//        todo: Address Change====================================================
-        if ($activity_type_id == 3) { ?>
-            <div class="card px-0 pt-4 pb-0 mt-3 mb-3" style="border:none;">
-                <div class="flashMessage">
-                    <?php echo $this->Flash->render(); ?>
-                </div>
-                <table class="table table-bordered">
-                    <thead>
-                    <tr class="trHead">
-                        <th scope="col">#</th>
-                        <th scope="col">Rationcard No</th>
-                        <th scope="col">Acknoklwdgment No</th>
-                        <th scope="col">Cardholder Name</th>
-                        <th scope="col">Father Name</th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    <?php
-                    if (!empty($nfsaRationcards)) {
-                        $SlNo = 1;
-                        foreach ($nfsaRationcards as $key => $value) {
-                            //echo "<pre>"; print_r($value); die();
-                            ?>
-                            <tr>
-                                <td><?php echo $SlNo; ?></td>
-                                <td><?php echo $value['rationcard_no']; ?></td>
-                                <td>
-                                    <?php echo $this->Form->create('regNo', ['controller' => 'SeccCardholders', 'action' => 'nfsaRationCardDataBso']); ?>
-                                    <?php echo $this->Form->hidden('ackNo', ['value' => $value['ack_no']]); ?>
-                                    <?php echo $this->Form->hidden('rationNo', ['value' => $value['rationcard_no']]); ?>
-                                    <button class="btnBx" aria-hidden="true" data-toggle="tooltip"
-                                            data-placement="right"
-                                            title="click to view Details"><?php echo $value['ack_no']; ?></button>
-                                    <?php echo $this->Form->end(); ?>
-                                </td>
-                                <!--                            <td>-->
-                                <?php //echo $value['cardtype_id']; ?><!--</td>-->
-                                <td><?php echo $value['name']; ?></td>
-                                <td><?php echo $value['fathername']; ?></td>
-                            </tr>
-                            <?php
-                            $SlNo++;
-                        }
-                    } else { ?>
-                        <tr>
-                            <td colspan="6">Sorry ! No Records Found.</td>
-                        </tr>
-                    <?php } ?>
-                    </tbody>
-                </table>
-            </div>
-        <?php }
-        // todo: change dealer Type===================================================
-        if ($activity_type_id == 4) { echo '4'; ?>
-            <div class="card px-0 pt-4 pb-0 mt-3 mb-3" style="border:none;">
-                <div class="flashMessage">
-                    <?php echo $this->Flash->render(); ?>
-                </div>
-                <table class="table table-bordered">
-                    <thead>
-                    <tr class="trHead">
-                        <th scope="col">#</th>
-                        <th scope="col">Rationcard No</th>
-                        <th scope="col">Acknoklwdgment No</th>
-                        <th scope="col">Cardholder Name</th>
-                        <th scope="col">Father Name</th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    <?php
-                    if (!empty($nfsaRationcards)) {
-                        $SlNo = 1;
-                        foreach ($nfsaRationcards as $key => $value) {
-                            //echo "<pre>"; print_r($value); die();
-                            ?>
-                            <tr>
-                                <td><?php echo $SlNo; ?></td>
-                                <td><?php echo $value['rationcard_no']; ?></td>
-                                <td>
-                                    <?php echo $this->Form->create('regNo', ['controller' => 'SeccCardholders', 'action' => 'nfsaRationCardDataBso']); ?>
-                                    <?php echo $this->Form->hidden('ackNo', ['value' => $value['ack_no']]); ?>
-                                    <?php echo $this->Form->hidden('rationNo', ['value' => $value['rationcard_no']]); ?>
-                                    <button class="btnBx" aria-hidden="true" data-toggle="tooltip"
-                                            data-placement="right"
-                                            title="click to view Details"><?php echo $value['ack_no']; ?></button>
-                                    <?php echo $this->Form->end(); ?>
-                                </td>
-                                <!--                            <td>-->
-                                <?php //echo $value['cardtype_id']; ?><!--</td>-->
-                                <td><?php echo $value['name']; ?></td>
-                                <td><?php echo $value['fathername']; ?></td>
-                            </tr>
-                            <?php
-                            $SlNo++;
-                        }
-                    } else { ?>
-                        <tr>
-                            <td colspan="6">Sorry ! No Records Found.</td>
-                        </tr>
-                    <?php } ?>
-                    </tbody>
-                </table>
-            </div>
-        <?php }
-        if ($activity_type_id == 5) { ?>
-            <div class="card px-0 pt-4 pb-0 mt-3 mb-3" style="border:none;">
-                <div class="flashMessage">
-                    <?php echo $this->Flash->render(); ?>
-                </div>
-                <table class="table table-bordered">
-                    <thead>
-                    <tr class="trHead">
-                        <th scope="col">#</th>
-                        <th scope="col">Rationcard No</th>
-                        <th scope="col">Acknoklwdgment No</th>
-                        <th scope="col">Cardholder Name</th>
-                        <th scope="col">Father Name</th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    <?php
-                    if (!empty($nfsaRationcards)) {
-                        $SlNo = 1;
-                        foreach ($nfsaRationcards as $key => $value) {
-                            //echo "<pre>"; print_r($value); die();
-                            ?>
-                            <tr>
-                                <td><?php echo $SlNo; ?></td>
-                                <td><?php echo $value['rationcard_no']; ?></td>
-                                <td>
-                                    <?php echo $this->Form->create('regNo', ['controller' => 'SeccCardholders', 'action' => 'nfsaRationCardDataBso']); ?>
-                                    <?php echo $this->Form->hidden('ackNo', ['value' => $value['ack_no']]); ?>
-                                    <?php echo $this->Form->hidden('rationNo', ['value' => $value['rationcard_no']]); ?>
-                                    <button class="btnBx" aria-hidden="true" data-toggle="tooltip"
-                                            data-placement="right"
-                                            title="click to view Details"><?php echo $value['ack_no']; ?></button>
-                                    <?php echo $this->Form->end(); ?>
-                                </td>
-                                <!--                            <td>-->
-                                <?php //echo $value['cardtype_id']; ?><!--</td>-->
-                                <td><?php echo $value['name']; ?></td>
-                                <td><?php echo $value['fathername']; ?></td>
-                            </tr>
-                            <?php
-                            $SlNo++;
-                        }
-                    } else { ?>
-                        <tr>
-                            <td colspan="6">Sorry ! No Records Found.</td>
-                        </tr>
-                    <?php } ?>
-                    </tbody>
-                </table>
-            </div>
-        <?php }
-//      todo: for mobile change=================================================================
-        elseif ($activity_type_id == 6) { ?>
-            <div class="card px-0 pt-4 pb-0 mt-3 mb-3" style="border:none;">
-                <div class="flashMessage">
-                    <?php echo $this->Flash->render(); ?>
-                </div>
-                <table class="table table-bordered">
-                    <thead>
-                    <tr class="trHead">
-                        <th scope="col">#</th>
-                        <th scope="col">Rationcard No</th>
-                        <th scope="col">Acknoklwdgment No</th>
-                        <th scope="col">Cardholder Name</th>
-                        <th scope="col">Father Name</th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    <?php
-                    if (!empty($nfsaRationcards)) {
-                        $SlNo = 1;
-                        foreach ($nfsaRationcards as $key => $value) {
-                            //echo "<pre>"; print_r($value); die();
-                            ?>
-                            <tr>
-                                <td><?php echo $SlNo; ?></td>
-                                <td><?php echo $value['rationcard_no']; ?></td>
-                                <td>
-                                    <?php echo $this->Form->create('regNo', ['controller' => 'SeccCardholders', 'action' => 'nfsaRationCardDataBso']); ?>
-                                    <?php echo $this->Form->hidden('ackNo', ['value' => $value['ack_no_ercms']]); ?>
-                                    <?php echo $this->Form->hidden('rationNo', ['value' => $value['rationcard_no']]); ?>
-                                    <button class="btnBx" aria-hidden="true" data-toggle="tooltip"
-                                            data-placement="right"
-                                            title="click to view Details"><?php echo $value['ack_no_ercms']; ?></button>
-                                    <?php echo $this->Form->end(); ?>
-                                </td>
-                                <!--                            <td>-->
-                                <?php //echo $value['cardtype_id']; ?><!--</td>-->
-                                <td><?php echo $value['name']; ?></td>
-                                <td><?php echo $value['fathername']; ?></td>
-                            </tr>
-                            <?php
-                            $SlNo++;
-                        }
-                    } else { ?>
-                        <tr>
-                            <td colspan="6">Sorry ! No Records Found.</td>
-                        </tr>
-                    <?php } ?>
-                    </tbody>
-                </table>
-            </div>
-        <?php }
-//      todo: for Account change=================================================================
-        elseif ($activity_type_id == 7) { ?>
-            <div class="card px-0 pt-4 pb-0 mt-3 mb-3" style="border:none;">
-                <div class="flashMessage">
-                    <?php echo $this->Flash->render(); ?>
-                </div>
-                <table class="table table-bordered">
-                    <thead>
-                    <tr class="trHead">
-                        <th scope="col">#</th>
-                        <th scope="col">Rationcard No</th>
-                        <th scope="col">Acknoklwdgment No</th>
-                        <th scope="col">Cardholder Name</th>
-                        <th scope="col">Father Name</th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    <?php
-                    if (!empty($nfsaRationcards)) {
-                        $SlNo = 1;
-                        foreach ($nfsaRationcards as $key => $value) {
-                            //echo "<pre>"; print_r($value); die();
-                            ?>
-                            <tr>
-                                <td><?php echo $SlNo; ?></td>
-                                <td><?php echo $value['rationcard_no']; ?></td>
-                                <td>
-                                    <?php echo $this->Form->create('regNo', ['controller' => 'SeccCardholders', 'action' => 'nfsaRationCardDataBso']); ?>
-                                    <?php echo $this->Form->hidden('ackNo', ['value' => $value['ack_no']]); ?>
-                                    <?php echo $this->Form->hidden('rationNo', ['value' => $value['rationcard_no']]); ?>
-                                    <button class="btnBx" aria-hidden="true" data-toggle="tooltip"
-                                            data-placement="right"
-                                            title="click to view Details"><?php echo $value['ack_no']; ?></button>
-                                    <?php echo $this->Form->end(); ?>
-                                </td>
-                                <!--                            <td>-->
-                                <?php //echo $value['cardtype_id']; ?><!--</td>-->
-                                <td><?php echo $value['name']; ?></td>
-                                <td><?php echo $value['fathername']; ?></td>
-                            </tr>
-                            <?php
-                            $SlNo++;
-                        }
-                    } else { ?>
-                        <tr>
-                            <td colspan="6">Sorry ! No Records Found.</td>
-                        </tr>
-                    <?php } ?>
-                    </tbody>
-                </table>
-            </div>
-        <?php }
-        if ($activity_type_id == 8) { ?>
-            <div class="card px-0 pt-4 pb-0 mt-3 mb-3" style="border:none;">
-                <div class="flashMessage">
-                    <?php echo $this->Flash->render(); ?>
-                </div>
-                <table class="table table-bordered">
-                    <thead>
-                    <tr class="trHead">
-                        <th scope="col">#</th>
-                        <th scope="col">Rationcard No</th>
-                        <th scope="col">Acknoklwdgment No</th>
-                        <th scope="col">Cardholder Name</th>
-                        <th scope="col">Father Name</th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    <?php
-                    if (!empty($nfsaRationcards)) {
-                        $SlNo = 1;
-                        foreach ($nfsaRationcards as $key => $value) {
-                            //echo "<pre>"; print_r($value); die();
-                            ?>
-                            <tr>
-                                <td><?php echo $SlNo; ?></td>
-                                <td><?php echo $value['rationcard_no']; ?></td>
-                                <td>
-                                    <?php echo $this->Form->create('regNo', ['controller' => 'SeccCardholders', 'action' => 'nfsaRationCardDataBso']); ?>
-                                    <?php echo $this->Form->hidden('ackNo', ['value' => $value['ack_no']]); ?>
-                                    <?php echo $this->Form->hidden('rationNo', ['value' => $value['rationcard_no']]); ?>
-                                    <button class="btnBx" aria-hidden="true" data-toggle="tooltip"
-                                            data-placement="right"
-                                            title="click to view Details"><?php echo $value['ack_no']; ?></button>
-                                    <?php echo $this->Form->end(); ?>
-                                </td>
-                                <!--                            <td>-->
-                                <?php //echo $value['cardtype_id']; ?><!--</td>-->
-                                <td><?php echo $value['name']; ?></td>
-                                <td><?php echo $value['fathername']; ?></td>
-                            </tr>
-                            <?php
-                            $SlNo++;
-                        }
-                    } else { ?>
-                        <tr>
-                            <td colspan="6">Sorry ! No Records Found.</td>
-                        </tr>
-                    <?php } ?>
-                    </tbody>
-                </table>
-            </div>
-        <?php }
-        if ($activity_type_id == 9) { ?>
-            <div class="card px-0 pt-4 pb-0 mt-3 mb-3" style="border:none;">
-                <div class="flashMessage">
-                    <?php echo $this->Flash->render(); ?>
-                </div>
-                <table class="table table-bordered">
-                    <thead>
-                    <tr class="trHead">
-                        <th scope="col">#</th>
-                        <th scope="col">Rationcard No</th>
-                        <th scope="col">Acknoklwdgment No</th>
-                        <th scope="col">Cardholder Name</th>
-                        <th scope="col">Father Name</th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    <?php
-                    if (!empty($nfsaRationcards)) {
-                        $SlNo = 1;
-                        foreach ($nfsaRationcards as $key => $value) {
-                            //echo "<pre>"; print_r($value); die();
-                            ?>
-                            <tr>
-                                <td><?php echo $SlNo; ?></td>
-                                <td><?php echo $value['rationcard_no']; ?></td>
-                                <td>
-                                    <?php echo $this->Form->create('regNo', ['controller' => 'SeccCardholders', 'action' => 'nfsaRationCardDataBso']); ?>
-                                    <?php echo $this->Form->hidden('ackNo', ['value' => $value['ack_no']]); ?>
-                                    <?php echo $this->Form->hidden('rationNo', ['value' => $value['rationcard_no']]); ?>
-                                    <button class="btnBx" aria-hidden="true" data-toggle="tooltip"
-                                            data-placement="right"
-                                            title="click to view Details"><?php echo $value['ack_no']; ?></button>
-                                    <?php echo $this->Form->end(); ?>
-                                </td>
-                                <!--                            <td>-->
-                                <?php //echo $value['cardtype_id']; ?><!--</td>-->
-                                <td><?php echo $value['name']; ?></td>
-                                <td><?php echo $value['fathername']; ?></td>
-                            </tr>
-                            <?php
-                            $SlNo++;
-                        }
-                    } else { ?>
-                        <tr>
-                            <td colspan="6">Sorry ! No Records Found.</td>
-                        </tr>
-                    <?php } ?>
-                    </tbody>
-                </table>
-            </div>
-        <?php }
-        if ($activity_type_id == 10) { ?>
-            <div class="card px-0 pt-4 pb-0 mt-3 mb-3" style="border:none;">
-                <div class="flashMessage">
-                    <?php echo $this->Flash->render(); ?>
-                </div>
-                <table class="table table-bordered">
-                    <thead>
-                    <tr class="trHead">
-                        <th scope="col">#</th>
-                        <th scope="col">Rationcard No</th>
-                        <th scope="col">Acknoklwdgment No</th>
-                        <th scope="col">Cardholder Name</th>
-                        <th scope="col">Father Name</th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    <?php
-                    if (!empty($nfsaRationcards)) {
-                        $SlNo = 1;
-                        foreach ($nfsaRationcards as $key => $value) {
-                            //echo "<pre>"; print_r($value); die();
-                            ?>
-                            <tr>
-                                <td><?php echo $SlNo; ?></td>
-                                <td><?php echo $value['rationcard_no']; ?></td>
-                                <td>
-                                    <?php echo $this->Form->create('regNo', ['controller' => 'SeccCardholders', 'action' => 'nfsaRationCardDataBso']); ?>
-                                    <?php echo $this->Form->hidden('ackNo', ['value' => $value['ack_no']]); ?>
-                                    <?php echo $this->Form->hidden('rationNo', ['value' => $value['rationcard_no']]); ?>
-                                    <button class="btnBx" aria-hidden="true" data-toggle="tooltip"
-                                            data-placement="right"
-                                            title="click to view Details"><?php echo $value['ack_no']; ?></button>
-                                    <?php echo $this->Form->end(); ?>
-                                </td>
-                                <!--                            <td>-->
-                                <?php //echo $value['cardtype_id']; ?><!--</td>-->
-                                <td><?php echo $value['name']; ?></td>
-                                <td><?php echo $value['fathername']; ?></td>
-                            </tr>
-                            <?php
-                            $SlNo++;
-                        }
-                    } else { ?>
-                        <tr>
-                            <td colspan="6">Sorry ! No Records Found.</td>
-                        </tr>
-                    <?php } ?>
-                    </tbody>
-                </table>
-            </div>
-        <?php }
-        if ($activity_type_id == 11) { ?>
-            <div class="card px-0 pt-4 pb-0 mt-3 mb-3" style="border:none;">
-                <div class="flashMessage">
-                    <?php echo $this->Flash->render(); ?>
-                </div>
-                <table class="table table-bordered">
-                    <thead>
-                    <tr class="trHead">
-                        <th scope="col">#</th>
-                        <th scope="col">Rationcard No</th>
-                        <th scope="col">Acknoklwdgment No</th>
-                        <th scope="col">Cardholder Name</th>
-                        <th scope="col">Father Name</th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    <?php
-                    if (!empty($nfsaRationcards)) {
-                        $SlNo = 1;
-                        foreach ($nfsaRationcards as $key => $value) {
-                            //echo "<pre>"; print_r($value); die();
-                            ?>
-                            <tr>
-                                <td><?php echo $SlNo; ?></td>
-                                <td><?php echo $value['rationcard_no']; ?></td>
-                                <td>
-                                    <?php echo $this->Form->create('regNo', ['controller' => 'SeccCardholders', 'action' => 'nfsaRationCardDataBso']); ?>
-                                    <?php echo $this->Form->hidden('ackNo', ['value' => $value['ack_no']]); ?>
-                                    <?php echo $this->Form->hidden('rationNo', ['value' => $value['rationcard_no']]); ?>
-                                    <button class="btnBx" aria-hidden="true" data-toggle="tooltip"
-                                            data-placement="right"
-                                            title="click to view Details"><?php echo $value['ack_no']; ?></button>
-                                    <?php echo $this->Form->end(); ?>
-                                </td>
-                                <!--                            <td>-->
-                                <?php //echo $value['cardtype_id']; ?><!--</td>-->
                                 <td><?php echo $value['name']; ?></td>
                                 <td><?php echo $value['fathername']; ?></td>
                             </tr>
