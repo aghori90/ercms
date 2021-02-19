@@ -137,7 +137,8 @@ use Cake\Routing\Router;
     <?php
     if ($this->getRequest()->is('post')) {
 //      todo: from jsfss_secc_cardholders table================================================================
-        if (($activity_type_id == 3) ||($activity_type_id == 4) || ($activity_type_id == 5) || ($activity_type_id == 7) || ($activity_type_id == 11)) { ?>
+        /** @var TYPE_NAME $activity_type_id */
+        if (($activity_type_id == 3) ||($activity_type_id == 4) || ($activity_type_id == 5) || ($activity_type_id == 7) || ($activity_type_id == 11) || ($activity_type_id == 12)) { ?>
             <div class="card px-0 pt-4 pb-0 mt-3 mb-3" style="border:none;">
                 <div class="flashMessage">
                     <?php echo $this->Flash->render(); ?>
@@ -186,7 +187,7 @@ use Cake\Routing\Router;
             </div>
         <?php }
 //      todo: from jsfss_secc_families table=================================================================
-        elseif (($activity_type_id == 1) || ($activity_type_id == 2) || ($activity_type_id == 6) || ($activity_type_id == 8) || ($activity_type_id == 9) || ($activity_type_id == 10)) { ?>
+        elseif (($activity_type_id == 1) || ($activity_type_id == 2) || ($activity_type_id == 6) || ($activity_type_id == 8) || ($activity_type_id == 9) || ($activity_type_id == 10) || ($activity_type_id == 14)) { ?>
             <div class="card px-0 pt-4 pb-0 mt-3 mb-3" style="border:none;">
                 <div class="flashMessage">
                     <?php echo $this->Flash->render(); ?>

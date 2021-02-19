@@ -63,7 +63,7 @@ $this->Html->script('injection.js');
 <div class="container-fluid table ">
     <div class="card-header bg-primary text-white">Ration Card Details For: <span class="headDeco"><?php echo $activityType[$activityTypeId];?></span></div>
     <div class="row">
-        <?php if( ($activityTypeId == 3) || ($activityTypeId == 4) || ($activityTypeId == 5) || ($activityTypeId == 7) || ($activityTypeId == 11)){ ?>
+        <?php if( ($activityTypeId == 3) || ($activityTypeId == 4) || ($activityTypeId == 5) || ($activityTypeId == 7) || ($activityTypeId == 11) || ($activityTypeId == 12) || ($activityTypeId == 14) ){ ?>
             <table class="table table-hover">
                 <tbody>
                 <tr>
@@ -159,7 +159,7 @@ $this->Html->script('injection.js');
 
         <?php }
 
-        elseif (($activityTypeId == 1) || ($activityTypeId == 2) ||  ($activityTypeId == 6) || ($activityTypeId == 8) || ($activityTypeId == 9) || ($activityTypeId == 10)) { ?>
+        elseif (($activityTypeId == 1) || ($activityTypeId == 2) ||  ($activityTypeId == 6) || ($activityTypeId == 8) || ($activityTypeId == 9) || ($activityTypeId == 10) ) { ?>
         <table class="table table-hover">
             <tbody>
             <tr>
@@ -212,7 +212,7 @@ $this->Html->script('injection.js');
                 <td scope="col"><b>Card Type :</b></td>
                 <td>
                     <?php
-                    if ($family_head_data[$hofId]['cardtype_id'] == '') {
+                    if (($family_head_data[$hofId]['cardtype_id'] == '') || ($family_head_data[$hofId]['cardtype_id'] == 0)) {
                         echo "NA";
                     } else {
                         echo $cardTypes[$family_head_data[$hofId]['cardtype_id']];
@@ -933,8 +933,8 @@ $this->Html->script('injection.js');
                             <td>Ration Card No</td>
                             <td>Name</td>
                             <td>Father Name</td>
-                            <td>Existing Address</td>
-                            <td>Applied Address</td>
+                            <td>Existing HOF</td>
+                            <td>Applied HOF</td>
                             <td>Action</td>
                         </tr>
                         </tbody>
@@ -952,19 +952,19 @@ $this->Html->script('injection.js');
                                     <td><?php echo $value['fathername']; ?></td>
                                     <td>
                                         <?php
-                                        if ($currAddress == '') {
+                                        if ($currName == '') {
                                             echo 'NA';
                                         } else {
-                                            echo $currAddress;
+                                            echo $currName;
                                         }
                                         ?>
                                     </td>
                                     <td>
                                         <?php
-                                        if ($value['res_address'] == '') {
+                                        if ($value['name'] == '') {
                                             echo 'NA';
                                         } else {
-                                            echo $value['res_address'];
+                                            echo $value['name'];
                                         }
                                         ?>
                                     </td>
@@ -1016,7 +1016,269 @@ $this->Html->script('injection.js');
                     </table>
                 </div>
             </div>
-        <?php } ?>
+        <?php }
+
+        /*todo: For Rationcard Surrender*/
+        elseif($activityTypeId == 12) { ?>
+        <div class="container-fluid table ">
+            <div class="card-header bg-primary text-white">Family Details</div>
+            <div class="container-fluid table ">
+                <div class="card-header bg-primary text-white">Family Details</div>
+                <!--        <fieldset>-->
+                <!--            <legend>--><? //= __('Family Details:') ?><!--</legend>-->
+                <div class="row">
+                    <table class="table table-bordered">
+                        <tbody class="headClr">
+                        <tr align="center">
+                            <td>#</td>
+                            <td>Ration Card No</td>
+                            <td>Name</td>
+                            <td>Father Name</td>
+                            <td>Existing Relation With HOF</td>
+                            <td>Applied Relation With HOF</td>
+                            <td>Action</td>
+
+                        </tr>
+                        </tbody>
+                        <?php
+                        if (!empty($seccFamiliesDetails)) {
+                            $SlNo = 1;
+                            foreach ($seccFamiliesDetails as $key => $value) {
+//                        echo $secc_family_id;
+//                        echo "<pre>"; print_r($seccFamiliesDetails); "<pre>"; die;
+                                ?>
+                                <tr align="center">
+                                    <td><?php echo $SlNo; ?></td>
+                                    <td><?php echo $value['rationcard_no'];?></td>
+                                    <td><?php echo $value['name']; ?></td>
+                                    <td><?php echo $value['fathername']; ?></td>
+                                    <td><?php echo $currMobile; ?></td>
+                                    <td><?php echo $value['mobile']; ?></td>
+                                    <td>
+                                        <?php echo $this->Form->create('mobApproval', ['url' => ['controller' => 'SeccCardholders', 'action' => 'approveDetails']]); ?>
+                                        <?php echo $this->Form->hidden('id', ['value' => $secc_family_id]); ?>
+                                        <?php echo $this->Form->hidden('rationCardNo', ['value' => $value['rationcard_no']]); ?>
+                                        <?php echo $this->Form->hidden('mobile', ['value' => $value['mobile']]); ?>
+                                        <?php echo $this->Form->hidden('activityFlag', ['id'=>'activityFlag']); ?>
+                                        <button type="submit" class="btn btn-outline-success verify" <?php echo $value['id']; ?> > Verify </button>
+
+                                        <!-- Trigger the modal with a button -->
+                                        <button type="button" class="btn btn-outline-danger reject" data-toggle="modal"
+                                                data-target="#myModal">Reject
+                                        </button>
+                                        <!-- Modal -->
+                                        <div id="myModal" class="modal fade" role="dialog">
+                                            <div class="modal-dialog">
+                                                <!-- Modal content-->
+                                                <div class="modal-content">
+                                                    <div class="modal-header">
+                                                        <button type="button" class="close" data-dismiss="modal">&times;
+                                                        </button>
+                                                        <h4 class="modal-title">Rejection Reason</h4>
+                                                    </div>
+                                                    <div class="modal-body">
+                                                        <?php echo $this->Form->control('rejectReason', ['label' => '', 'class' => 'form-control txtOnly', 'placeholder' => 'Enter Reason For Rejection']); ?>
+                                                    </div>
+                                                    <div class="modal-footer">
+                                                        <button type="button" class="btn btn-default" data-dismiss="modal"> Close </button>
+                                                        <button type="submit" class="btn btn-outline-danger" <?php echo $value['id']; ?> > Submit </button>
+                                                    </div>
+                                                </div>
+
+                                            </div>
+                                        </div>
+                                        <?php echo $this->Form->end(); ?>
+                                    </td>
+                                </tr>
+                                <?php
+                                $SlNo++;
+                            }
+                        } else {
+                            ?>
+                            <tr>
+                                <td colspan="5">Sorry ! No Records Found.</td>
+                            </tr>
+                        <?php }?>
+                    </table>
+                </div>
+            </div>
+        </div>
+        <?php }
+
+        /*todo: For Gender change*/
+        elseif($activityTypeId == 13) { ?>
+            <div class="container-fluid table ">
+                <div class="card-header bg-primary text-white">Family Details</div>
+                <div class="row">
+                    <table class="table table-bordered">
+                        <tbody class="headClr">
+                        <tr align="center">
+                            <td>#</td>
+                            <td>Ration Card No</td>
+                            <td>Name</td>
+                            <td>Father Name</td>
+                            <td>Reason For Surrender</td>
+                            <td>Action</td>
+                        </tr>
+                        </tbody>
+                        <?php
+                        if (!empty($seccFamiliesDetails)) {
+                            $SlNo = 1;
+                            foreach ($seccFamiliesDetails as $key => $value) {
+
+//                        echo "<pre>"; print_r($seccFamiliesDetails); "<pre>"; die;
+                                ?>
+                                <tr align="center">
+                                    <td><?php echo $SlNo; ?></td>
+                                    <td><?php echo $value['rationcard_no'];?></td>
+                                    <td><?php echo $value['name']; ?></td>
+                                    <td><?php echo $value['fathername']; ?></td>
+                                    <td><?php echo 'NA'; ?></td>
+                                    <td>
+                                        <?php echo $this->Form->create('mobApproval', ['url' => ['controller' => 'SeccCardholders', 'action' => 'approveDetails']]); ?>
+                                        <?php echo $this->Form->hidden('id', ['value' => $secc_cardholder_id]); ?>
+                                        <?php echo $this->Form->hidden('rationCardNo', ['value' => $value['rationcard_no']]); ?>
+                                        <?php echo $this->Form->hidden('activityFlag', ['id'=>'activityFlag']); ?>
+                                        <button type="submit" class="btn btn-outline-success verify" <?php echo $value['id']; ?> > Verify </button>
+
+                                        <!-- Trigger the modal with a button -->
+                                        <button type="button" class="btn btn-outline-danger reject" data-toggle="modal"
+                                                data-target="#myModal">Reject
+                                        </button>
+                                        <!-- Modal -->
+                                        <div id="myModal" class="modal fade" role="dialog">
+                                            <div class="modal-dialog">
+                                                <!-- Modal content-->
+                                                <div class="modal-content">
+                                                    <div class="modal-header">
+                                                        <button type="button" class="close" data-dismiss="modal">&times;
+                                                        </button>
+                                                        <h4 class="modal-title">Rejection Reason</h4>
+                                                    </div>
+                                                    <div class="modal-body">
+                                                        <?php echo $this->Form->control('rejectReason', ['label' => '', 'class' => 'form-control txtOnly', 'placeholder' => 'Enter Reason For Rejection']); ?>
+                                                    </div>
+                                                    <div class="modal-footer">
+                                                        <button type="button" class="btn btn-default" data-dismiss="modal"> Close </button>
+                                                        <button type="submit" class="btn btn-outline-danger" <?php echo $value['id']; ?> > Submit </button>
+                                                    </div>
+                                                </div>
+
+                                            </div>
+                                        </div>
+                                        <?php echo $this->Form->end(); ?>
+                                    </td>
+                                </tr>
+                                <?php
+                                $SlNo++;
+                            }
+                        } else {
+                            ?>
+                            <tr>
+                                <td colspan="5">Sorry ! No Records Found.</td>
+                            </tr>
+                        <?php }?>
+                    </table>
+                </div>
+            </div>
+        <?php }
+
+        /*todo: For Relation Change*/
+        elseif($activityTypeId == 14) { ?>
+            <div class="container-fluid table ">
+                <div class="card-header bg-primary text-white">Family Details</div>
+                <div class="row">
+                    <table class="table table-bordered">
+                        <tbody class="headClr">
+                        <tr align="center">
+                            <td>#</td>
+                            <td>Ration Card No</td>
+                            <td>Name</td>
+                            <td>Father Name</td>
+                            <td>Existing Realtion with HOF</td>
+                            <td>Applied Realtion with HOF</td>
+                            <td>Action</td>
+                        </tr>
+                        </tbody>
+                        <?php
+                        if (!empty($seccFamiliesDetails)) {
+                            $SlNo = 1;
+                            foreach ($seccFamiliesDetails as $key => $value) {
+
+//                        echo "<pre>"; print_r($seccFamiliesDetails); "<pre>"; die;
+                                ?>
+                                <tr align="center">
+                                    <td><?php echo $SlNo; ?></td>
+                                    <td><?php echo $value['rationcard_no'];?></td>
+                                    <td><?php echo $value['name']; ?></td>
+                                    <td><?php echo $value['fathername']; ?></td>
+                                    <td>
+                                        <?php
+                                            if($currRelation == ''){
+                                                echo 'NA';
+                                            }else{
+                                                echo $relation[$currRelation];
+                                            }
+                                        ?>
+                                    </td>
+                                    <td>
+                                        <?php
+                                            if($value['relation_id'] == ''){
+                                                echo 'NA';
+                                            }else{
+                                                echo $relation[$value['relation_id']];
+                                            }
+                                        ?>
+                                    </td>
+                                    <td>
+                                        <?php echo $this->Form->create('mobApproval', ['url' => ['controller' => 'SeccCardholders', 'action' => 'approveDetails']]); ?>
+                                        <?php echo $this->Form->hidden('id', ['value' => $secc_family_id]); ?>
+                                        <?php echo $this->Form->hidden('rationCardNo', ['value' => $value['rationcard_no']]); ?>
+                                        <?php echo $this->Form->hidden('activityFlag', ['id'=>'activityFlag']); ?>
+                                        <button type="submit" class="btn btn-outline-success verify" <?php echo $value['id']; ?> > Verify </button>
+
+                                        <!-- Trigger the modal with a button -->
+                                        <button type="button" class="btn btn-outline-danger reject" data-toggle="modal"
+                                                data-target="#myModal">Reject
+                                        </button>
+                                        <!-- Modal -->
+                                        <div id="myModal" class="modal fade" role="dialog">
+                                            <div class="modal-dialog">
+                                                <!-- Modal content-->
+                                                <div class="modal-content">
+                                                    <div class="modal-header">
+                                                        <button type="button" class="close" data-dismiss="modal">&times;
+                                                        </button>
+                                                        <h4 class="modal-title">Rejection Reason</h4>
+                                                    </div>
+                                                    <div class="modal-body">
+                                                        <?php echo $this->Form->control('rejectReason', ['label' => '', 'class' => 'form-control txtOnly', 'placeholder' => 'Enter Reason For Rejection']); ?>
+                                                    </div>
+                                                    <div class="modal-footer">
+                                                        <button type="button" class="btn btn-default" data-dismiss="modal"> Close </button>
+                                                        <button type="submit" class="btn btn-outline-danger" <?php echo $value['id']; ?> > Submit </button>
+                                                    </div>
+                                                </div>
+
+                                            </div>
+                                        </div>
+                                        <?php echo $this->Form->end(); ?>
+                                    </td>
+                                </tr>
+                                <?php
+                                $SlNo++;
+                            }
+                        } else {
+                            ?>
+                            <tr>
+                                <td colspan="5">Sorry ! No Records Found.</td>
+                            </tr>
+                        <?php }?>
+                    </table>
+                </div>
+            </div>
+        <?php }
+        ?>
     </div>
 </div>
 <script type="text/javascript">
